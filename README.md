@@ -24,7 +24,7 @@ Role in the App Flow: This part serves as the entry point and visual interface o
 
 **Qt Framework:** QApplication, QWidget, and QPushButton
 
-Layout Management:** Vertical, horizontal, and grid layouts
+**Layout Management:** Vertical, horizontal, and grid layouts
 
 **Event-Driven Programming:** The mechanism of signals and slots
 
@@ -59,9 +59,8 @@ Role in the App Flow: This part acts as the "brain" and storage of the app. It d
 
 
 --------------------------------------------------------------------------------
-## **Student 3:** 
+## **Student 3:** Advanced Utilities & Concurrency
 
-Advanced Utilities & Concurrency
 Role in the App Flow: This part provides performance optimization and "smart" features. This student is responsible for background tasks (like reminder notifications), thread safety to prevent data corruption, and modern C++ optimizations like move semantics and smart memory management to prevent leaks
 
  **==> The Pipeline:**
