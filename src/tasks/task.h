@@ -43,6 +43,10 @@ private:
     void setRecurrence(Recurrence recurrence);
     void setLabel(const std::string& label);
 
+    //UTILITIES
+    bool isOverdue() const;
+    std::string toString() const;
+
 };
 
 #endif //TASK_H
