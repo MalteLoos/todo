@@ -118,7 +118,8 @@ void TaskManager::displayAllTasks()const{
     }
     std::cout << "All Tasks:\n";
     for(const auto& pair: tasks){
-        std::cout << pair.second.toString() << "\n"); // => displaying task details 
-        std::cout <<"-" * 40 << "\n"
+        std::cout << pair.second.toString() << "\n"; // => displaying task details 
+        std::cout << std::string(40, '-') << "\n";
+    }
 }
 
