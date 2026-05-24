@@ -18,9 +18,9 @@ public:
     TaskManager() = default;
     
     void addTask(const Task& task);
-    void deleteTask(const std::string& id);
-    void updateTask(const std::string& id, const Task& updatedTask);
-    void finishTask(const std::string& id);
+    bool deleteTask(const std::string& id);
+    bool updateTask(const std::string& id, const Task& updatedTask);
+    bool finishTask(const std::string& id);
 
     // ALGORITHMs
     std::vector<Task> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
