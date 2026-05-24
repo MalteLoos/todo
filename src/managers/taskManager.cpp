@@ -32,12 +32,79 @@ bool TaskManager::finishTask(const std::string& id){
     return false;
 }
 
+// SEARCH ALGORITHM
+Task* TaskManager::searchById(const std::string& id){
+    auto iterator = tasks.find(id);
+    if (iterator != tasks.end()){ 
+        return &(iterator -> second);
+    
+    }
+    return nullptr;
+}
 
+std::vector<Task> TaskManager::searchByTitle(const std::string& keyword)const{
+    std::vector<Task> result; // => to store matching tasks
+    for (const auto& pair : tasks){ // => pair: <id and task>
+        if (pair.second.getTitle().find(keyword) != std::string::npos){ // => case: keyword in title found
+            result.push_back(pair.second);
+        }
+    }
+    return result    
+}
 
+// FILTERING ALGORITHMS
+std::vector<Task> TaskManager::filterByPriority(Priority priority) const{
+    std::vector<Task> result;
+    for (const auto& pair : tasks){
+        if (pair.second.getPriority() == priority){
+            result.push_back(pair.second);
+        }
+    }
+    return result;
+}
 
+std::vector<Task> TaskManager::filterByStatus(bool completed) const{
+    std::vector<Task> result;
+    for (const auto& pair : tasks){
+        if (pair.second.isCompleted() == completed){
+            result.push_back(pair.second);
+        }
+    }
+    return result;
+}
 
-// here algorithms -- > searching, sorting, filtering 
+std::vector<Task> TaskManager::getOverdueTasks() const{
+    std::vector<Task> result;
+    for (const auto& pair : tasks){
+        if (pair.second.isOverdue()){
+            result.push_back(pair.second);
+        }
+    }
+    return result;
+}
 
+//SORTING ALGORITHMS 
+std::vector<Task> TaskManager::getTasksSortedByDeadline() const{
+    std::vector<Task> sortedTasks; // => sorted tasks <-> result
+    for (const auto& pair : tasks){
+        sortedTasks.push_back(pair.second); // => copying tasks map to vector 
+    }
+    std::sort(sortedTasks.begin(), sortedTasks.end(), [](const Task& a, const Task& b){ 
+        return a.getDeadline() < b.getDeadline(); // => lambda function to compare deadlines for sorting
+    });
+    return soted Tasks;
+}
+
+std::vector<Task> TaskManager::getTasksSortedByPriority() const{
+    std::vector<Task> sortedTasks; 
+    for (const auto& pair : tasks){
+        sortedTasks.push_back(pair.second); 
+    }
+    std::sort(sortedTasks.begin(), sortedTasks.end(), [](const Task& a, const Task& b){ 
+        return static_cast<int>(a.getPriority()) > static_cast<int>(b.getPriority());
+    });
+    return sortedTasks;
+}
 
 // here utilities 
 
