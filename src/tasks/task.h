@@ -42,6 +42,7 @@ private:
     void setPriority(Priority priority);
     void setRecurrence(Recurrence recurrence);
     void setLabel(const std::string& label);
+    void setCompleted(bool completed);
 
     //UTILITIES
     bool isOverdue() const;
