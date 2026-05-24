@@ -49,7 +49,7 @@ std::vector<Task> TaskManager::searchByTitle(const std::string& keyword)const{
             result.push_back(pair.second);
         }
     }
-    return result    
+    return result;    
 }
 
 // FILTERING ALGORITHMS
@@ -92,7 +92,7 @@ std::vector<Task> TaskManager::getTasksSortedByDeadline() const{
     std::sort(sortedTasks.begin(), sortedTasks.end(), [](const Task& a, const Task& b){ 
         return a.getDeadline() < b.getDeadline(); // => lambda function to compare deadlines for sorting
     });
-    return soted Tasks;
+    return sortedTasks;
 }
 
 std::vector<Task> TaskManager::getTasksSortedByPriority() const{
