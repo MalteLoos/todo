@@ -1,6 +1,6 @@
 #include<fstream>
 #include <algorithm>
-
+#include <iostream>
 
 #include "taskManager.h"
 
@@ -106,6 +106,19 @@ std::vector<Task> TaskManager::getTasksSortedByPriority() const{
     return sortedTasks;
 }
 
-// here utilities 
+// UTILITIES
+size_t TaskManager::getTaskCount() const{
+    return tasks.size();
+}
 
-// the end ..!?
+void TaskManager::displayAllTasks()const{
+    if (tasks.empty()){
+        std::cout << "There are no tasks available.\n";
+        return;
+    }
+    std::cout << "All Tasks:\n";
+    for(const auto& pair: tasks){
+        std::cout << pair.second.toString() << "\n"); // => displaying task details 
+        std::cout <<"-" * 40 << "\n"
+}
+
