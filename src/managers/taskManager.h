@@ -22,7 +22,9 @@ public:
     bool updateTask(const std::string& id, const Task& updatedTask);
     bool finishTask(const std::string& id);
 
-    // ALGORITHMs
+    // ALGORITHMS
+    Task* searchById(const std::string& id);
+
     std::vector<Task> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
 
     std::vector<Task> filterByPriority(Priority priority) const; // => filtering tasks based on priority leve
