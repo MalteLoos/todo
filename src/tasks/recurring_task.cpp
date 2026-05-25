@@ -5,5 +5,4 @@
 
 recurringTask::recurringTask()
     : Task(), // => superclass constructor
-    recurrence(Recurrence::None),
-    nextOcurrence(deadline){} 
+    nextOccurrence(getDeadline()){} 

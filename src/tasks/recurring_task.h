@@ -4,17 +4,15 @@
 #include "task.h"
 
 class recurringTask : public Task { // => recurringTask is subclass to Task superclass
-    private:
-    Recurrence recurrence; // => pattern of repetition
-    std::chrono::system_clock::time_point nextOcurrence; // => next scheduling 
+private:
+    std::chrono::system_clock::time_point nextOccurrence; // => next scheduling 
 
-    public:
+public:
     // CONSTRUCTOR
     recurringTask();
     recurringTask(const std::string& title,
                 const std::chrono::system_clock::time_point& deadline,
-                Priority prioriity,
-                Recurrence recurrence);
+                Priority priority);
 
     // GETTERS 
     Recurrence getRecurrence() const;
@@ -28,12 +26,12 @@ class recurringTask : public Task { // => recurringTask is subclass to Task supe
     // UTILITIES
     void markCompleted(); 
     std::string toString() const override;
-    std::string getType() const override;
-};
+    std::string getType() const override {
+        return "Recurring Task";
+    }
 
-private: 
-    std::chrono::system_clock::time_point calculateNextOcurrence(const std::chrono::system_clock::time_point& getCurrentDeadline() const);
+private:
+    std::chrono::system_clock::time_point calculateNextOccurrence(const std::chrono::system_clock::time_point& getCurrentDeadline);
 };
-
 
 #endif //RECURRING_TASK
