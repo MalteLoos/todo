@@ -26,6 +26,9 @@ public:
     std::chrono::minutes getDuration() const;
     std::chrono::system_clock::time_point getEndTime() const;
     std::chrono::minutes getActualTime() const;
+    std::string getType() const override {
+    return "Timed Task";
+}
 
     //SETTERS
     void setTimerRunning(bool running);

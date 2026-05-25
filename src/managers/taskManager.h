@@ -26,7 +26,7 @@ public:
     // ALGORITHMS
     Task* searchById(const std::string& id);
 
-    std::vector<std::unique_ptr<Task>> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
+    std::vector<Task*> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
 
     std::vector<Task*> filterByPriority(Priority priority) const; // => filtering tasks based on priority leve
     std::vector<Task*> filterByStatus(bool completed) const; // => filtering tasks aka. get the completed or incomplted ones

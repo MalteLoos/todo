@@ -126,7 +126,7 @@ std::string Task::toString() const{
     ss << "Task ID: " << id << "\n";
     ss << "Title: " << title << "\n";
     ss << "Description: " << description << "\n";
-    ss << "Deadline: " <<timePointToString(deadline) << "\n";
+    ss << "Deadline: " << timePointToString(deadline) << "\n";
     ss << "Priority: " << priorityToString(priority) <<  "\n";
     ss << "Recurrence: " << recurrenceToString(recurrence) << "\n";
     ss << "Completed: " << (completed ? "Yes" : "No") << "\n";
@@ -134,5 +134,29 @@ std::string Task::toString() const{
     for(const auto& lab: label){
         ss << "#" << lab << " ";
     }  
+    return ss.str();
+}
+
+Category Task::getCategory() const {
+    return category;
+}
+
+void Task::setCategory(Category cat) {
+    category = cat;
+}
+
+bool Task::isCompleted() const {
+    return completed;
+}
+
+void Task::setCompleted(bool comp) {
+    completed = comp;
+}
+
+// Helper to convert time_point to string
+std::string Task::timePointToString(const std::chrono::system_clock::time_point& tp) const {
+    std::time_t time = std::chrono::system_clock::to_time_t(tp);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
     return ss.str();
 }
