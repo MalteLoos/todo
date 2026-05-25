@@ -57,7 +57,6 @@ Task::Task():
     description(""),
     deadline(std::chrono::system_clock::now()),
     priority(Priority::LOW),
-    recurrence(Recurrence::NONE),
     completed(false){}
 
 Task::Task(const std::string& title,
@@ -69,7 +68,6 @@ Task::Task(const std::string& title,
            description(""),
            deadline(deadline),
            priority(priority),
-           recurrence(recurrence),
            completed(false){}
 
 // GETTERS
