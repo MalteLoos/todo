@@ -19,6 +19,7 @@ protected:
     bool completed; // => task status (finished or not)
     Category category; // => task classification - thought "wouldn't make sense to have as subclasses"!
     std::vector<std::string> label; // =>organizational tags i.e #work #university #personal 
+    std::string timePointToString(const std::chrono::system_clock::time_point& tp) const;
 
 public:
     // CONSTRUCTORS 
