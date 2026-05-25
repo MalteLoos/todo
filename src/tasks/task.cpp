@@ -58,17 +58,20 @@ Task::Task():
     deadline(std::chrono::system_clock::now()),
     priority(Priority::LOW),
     recurrence(Recurrence::NONE),
+    category(Category::OTHER),
     completed(false){}
 
 Task::Task(const std::string& title,
            const std::chrono::system_clock::time_point& deadline,
            Priority priority, 
+           Category category,
            Recurrence recurrence):
            id(generateID()),
            title(title),
            description(""),
            deadline(deadline),
            priority(priority),
+           category(category),
            recurrence(recurrence),
            completed(false){}
 

@@ -16,9 +16,8 @@ recurringTask::recurringTask(const std::string& title,
                              const std::chrono::system_clock::time_point& deadline,
                              Priority priority,
                              Recurrence rec)
-    : Task(title, deadline, priority, rec),
-      nextOccurrence(deadline) 
-{}
+    : Task(title, deadline, priority, Category::OTHER, rec),
+      nextOccurrence(deadline){}
 
 // GETTERS 
 Recurrence recurringTask::getRecurrence() const{

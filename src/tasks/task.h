@@ -26,8 +26,8 @@ public:
     Task(const std::string& title, 
         const std::chrono::system_clock::time_point& deadline,
         Priority priority,
-        Recurrence recurrence,
-        Category category);  
+        Category category,
+        Recurrence recurrence);  
 
     // POLYMORPHISM 
     virtual ~Task() = default; // => destructer 
