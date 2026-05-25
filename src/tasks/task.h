@@ -26,6 +26,9 @@ public:
         Priority priority,
         Recurrence recurrence);  
 
+    // POLYMORPHISM 
+    virtual ~Task() = default;
+
     // GETTERS
     std::string getId() const;
     std::string getTitle() const;
@@ -46,7 +49,11 @@ public:
 
     //UTILITIES
     bool isOverdue() const;
-    std::string toString() const;
+
+    virtual std::string toString() const;
+    virtual std::string getType() const{
+        return "Task";
+    }
 
 };
 
