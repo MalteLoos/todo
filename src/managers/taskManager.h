@@ -11,7 +11,7 @@
 
 class TaskManager{
 private:
-    std::map<std::string, Task> tasks;
+    std::vector<std::unique_ptr<Task>> tasks;
 
 public:
     // CONSTRUCTOR
@@ -25,14 +25,14 @@ public:
     // ALGORITHMS
     Task* searchById(const std::string& id);
 
-    std::vector<Task> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
+    std::vector<std::unique_ptr<Task>> searchByTitle(const std::string& keyword) const; // => searching tasks whose title contains a specific >> keyword<<
 
-    std::vector<Task> filterByPriority(Priority priority) const; // => filtering tasks based on priority leve
-    std::vector<Task> filterByStatus(bool completed) const; // => filtering tasks aka. get the completed or incomplted ones
-    std::vector<Task> getOverdueTasks() const; // => retrieve tasks past deadline 
+    std::vector<std::unique_ptr<Task>> filterByPriority(Priority priority) const; // => filtering tasks based on priority leve
+    std::vector<std::unique_ptr<Task>> filterByStatus(bool completed) const; // => filtering tasks aka. get the completed or incomplted ones
+    std::vector<std::unique_ptr<Task>> getOverdueTasks() const; // => retrieve tasks past deadline 
 
-    std::vector<Task> getTasksSortedByDeadline() const; // => sorting tasks by their deadlines
-    std::vector<Task> getTasksSortedByPriority() const; // => sort: highest to lowest 
+    std::vector<std::unique_ptr<Task>> getTasksSortedByDeadline() const; // => sorting tasks by their deadlines
+    std::vector<std::unique_ptr<Task>> getTasksSortedByPriority() const; // => sort: highest to lowest 
 
     //UTILITIES
     size_t getTaskCount() const; 
