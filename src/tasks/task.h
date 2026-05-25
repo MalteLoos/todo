@@ -6,6 +6,7 @@
 
 enum class Priority{LOW, MEDIUM, HIGH};
 enum class Recurrence{NONE, DAILY, WEEKLY, MONTHLY, YEARLY};
+enum class Category{WORK, EDUCATION, PERSONAL, HEALTH, FINANCE, OTHER};
 
 class Task{
 protected:
@@ -16,6 +17,7 @@ protected:
     Priority priority;; // => importance level    
     Recurrence recurrence; // => repetition patterns
     bool completed; // => task status (finished or not)
+    Category category; // => task classification - thought "wouldn't make sense to have as subclasses"!
     std::vector<std::string> label; // =>organizational tags i.e #work #university #personal 
 
 public:
@@ -24,7 +26,8 @@ public:
     Task(const std::string& title, 
         const std::chrono::system_clock::time_point& deadline,
         Priority priority,
-        Recurrence recurrence);  
+        Recurrence recurrence,
+        Category category);  
 
     // POLYMORPHISM 
     virtual ~Task() = default;
@@ -35,6 +38,7 @@ public:
     std::string getDescription() const;
     std::chrono::system_clock::time_point getDeadline() const;
     Priority getPriority() const;
+    Category getCategory() const;
     Recurrence getRecurrence() const;
     bool isCompleted() const;
     std::vector<std::string> getLabel() const;
@@ -44,6 +48,7 @@ public:
     void setDescription(const std::string& description);
     void setPriority(Priority priority);
     void setRecurrence(Recurrence recurrence);
+    void setCategory(Category category);
     void setLabel(const std::string& label);
     void setCompleted(bool completed);
 
