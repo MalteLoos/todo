@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "../tasks/task.h" // => taskManager relies on Task definition
 
@@ -16,8 +17,8 @@ private:
 public:
     // CONSTRUCTOR
     TaskManager() = default;
-    
-    void addTask(const Task& task);
+
+    void addTask(std::unique_ptr<Task> tasks); 
     bool deleteTask(const std::string& id);
     bool updateTask(const std::string& id, const Task& updatedTask);
     bool finishTask(const std::string& id);
@@ -36,7 +37,7 @@ public:
 
     std::vector<Task*> getRecurringTasks() const; // => retrieve all repeated tasks
     std::vector<Task*> getTimedTasks() const; // => retrieved all tasks w/ timer
-    
+
     //UTILITIES
     size_t getTaskCount() const; 
     void displayAllTasks() const;
