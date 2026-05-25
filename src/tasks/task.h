@@ -8,7 +8,7 @@ enum class Priority{LOW, MEDIUM, HIGH};
 enum class Recurrence{NONE, DAILY, WEEKLY, MONTHLY, YEARLY};
 
 class Task{
-private:
+protected:
     std::string id; // => unique identifier for the task
     std::string title; // => task name 
     std::string description; // => descriptive details 
@@ -18,7 +18,7 @@ private:
     bool completed; // => task status (finished or not)
     std::vector<std::string> label; // =>organizational tags i.e #work #university #personal 
 
-    public:
+public:
     // CONSTRUCTORS 
     Task();
     Task(const std::string& title, 
