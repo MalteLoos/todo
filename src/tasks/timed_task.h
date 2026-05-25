@@ -4,9 +4,13 @@
 #include "task.h"
 class timedTask : public Task{
 private:
+    bool timerRunning; // => is the timer active  
     std::chrono::system_clock::time_point startTime; // => time when task should begin
-    std::chrono::system_clock::time_point duration; // => time required to carry the task
+    std::chrono::minutes duration; // => time required to carry the task
+    std::chrono::minutes actualTime; // => time spent on task
+
 public:
+
     // CONSTRUCTORS
     timedTask();
     timedTask(const std::string& title,
@@ -14,18 +18,25 @@ public:
               Priority priority,
               Recurrence recurrence,
               const std::chrono::system_clock::time_point& startTime,
-              const std::chrono::system_clock::time_point& duration);
+              const std::chrono::minutes& duration);
 
     // GETTERS
+    bool isTimerRunning() const;
     std::chrono::system_clock::time_point getStartTime() const;
     std::chrono::minutes getDuration() const;
     std::chrono::system_clock::time_point getEndTime() const;
+    std::chrono::minutes getActualTime() const;
 
     //SETTERS
+    void setTimerRunning(bool running);
     void setStartTime(const std::chrono::system_clock::time_point& startTime);
     void setDuration(std::chrono::minutes duration);
+    void setActualTime(std::chrono::minutes actualTime);
+    
 
     // UTILITIES
+    void startTimer();
+    void stopTimer();
     std::string toString() const override;
 };
 
