@@ -30,7 +30,7 @@ public:
         Category category);  
 
     // POLYMORPHISM 
-    virtual ~Task() = default;
+    virtual ~Task() = default; // => destructer 
 
     // GETTERS
     std::string getId() const;
