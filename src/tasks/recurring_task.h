@@ -12,7 +12,8 @@ public:
     recurringTask();
     recurringTask(const std::string& title,
                 const std::chrono::system_clock::time_point& deadline,
-                Priority priority);
+                Priority priority,
+                Recurrence recurrence);
 
     // GETTERS 
     Recurrence getRecurrence() const;
@@ -31,7 +32,7 @@ public:
     }
 
 private:
-    std::chrono::system_clock::time_point calculateNextOccurrence(const std::chrono::system_clock::time_point& getCurrentDeadline);
+    std::chrono::system_clock::time_point calculateNextOccurrence(const std::chrono::system_clock::time_point& getCurrentDeadline) const;
 };
 
 #endif //RECURRING_TASK
