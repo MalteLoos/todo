@@ -43,6 +43,24 @@ static std::string recurrenceToString(Recurrence recurrence){
     }
 }
 
+static std::string categoryToString(Category category){
+    switch(category){
+        case Category::OTHER: 
+            return "OTHER";
+        case Category::WORK:
+            return "WORK";
+        case Category::EDUCATION:
+            return "EDUCATION";
+        case Category::PERSONAL:
+            return "PERSONAL";
+        case Category::HEALTH:
+            return "HEALTH";
+        case Category::FINANCE:
+            return "FINANCE";
+        default: 
+            return "UNKNOWN";
+    }
+}
 static std::string timePointToString(const std::chrono::system_clock::time_point& tp){
     std::time_t time = std::chrono::system_clock::to_time_t(tp);
     std::stringstream ss;
