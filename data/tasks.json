@@ -1,0 +1,19 @@
+[
+  {
+    "type": "Task",
+    "id": "550e8400-...",
+    "title": "Buy groceries",
+    "deadline": "2026-05-27T18:00:00",
+    "priority": "HIGH",
+    "completed": false,
+    "labels": ["#work", "#shopping"]
+  },
+  {
+    "type": "RecurringTask",
+    "id": "6ba7b810-...",
+    "title": "Daily standup",
+    "recurrence": "DAILY",
+    "priority": "MEDIUM",
+    "completed": false
+  }
+]
