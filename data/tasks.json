@@ -1,29 +1,4 @@
-[
-  {
-    "type": "Task",
-    "id": "550e8400-...",
-    "title": "Buy groceries",
-    "deadline": "2026-05-27T18:00:00",
-    "priority": "HIGH",
-    "completed": false,
-    "labels": ["#work", "#shopping"]
-  },
-  {
-    "type": "RecurringTask",
-    "id": "6ba7b810-...",
-    "title": "Daily standup",
-    "recurrence": "DAILY",
-    "priority": "MEDIUM",
-    "completed": false
-  },
-  {
-    "type": "TimedTask",
-    "id" : "550e8418-...",
-    "title" : "CPP Project",
-    "deadline" : "2026-06-01T23:59:00",
-    "priority" : "HIGH",
-    "completed" : false,
-    "category" : "education",
-    "labels" : ["#university", "#project", "#cpp"]
-  }
-]
+73738B20-6352-4801-9F5F-24D5102EE019|Finish C++ Project|Final debugging and testing, then submit.|1779889757|2|0|0
+99CA31A6-50B2-4D68-A99E-B3F23E03164B|Go Gym session|Cardio Routine|1779810557|0|1|1
+E4049164-6BBA-4602-802B-A4925673BC44|C++ Homework Assignment|Complete 2 out of 4 exercises|1780408157|1|2|0
+D75F85BE-87E7-4998-AE76-F762513551AD|Rent Payment|Transfer 500€ to landlord|1782395357|2|3|0
