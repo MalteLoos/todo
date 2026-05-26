@@ -10,5 +10,6 @@ add_executable(todo
     src/tasks/recurring_task.cpp
     src/tasks/timed_task.cpp
     src/managers/taskManager.cpp
+    src/storage/taskStorage.cpp
 )
 
