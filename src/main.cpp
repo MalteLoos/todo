@@ -13,8 +13,8 @@ int main() {
 
     // TIME SPECIFICTIONS 
     auto now = std::chrono::system_clock::now();
-    auto tomorrow = std::chrono::system_clock::hours(24);
-    auto nextWeek = std::chrono::system_clock::hours(24 * 7);
+    auto tomorrow = now + std::chrono::system_clock::hours(24);
+    auto nextWeek = now + std::chrono::system_clock::hours(24 * 7);
 
     //CREATING TASKS
     auto taskA = std::make_unique<Task>("Finish C++ Project", tomorrow, Priority::HIGH, Category::EDUCATION, Recurrence::NONE);
@@ -38,10 +38,10 @@ int main() {
 
     // B) RECURRING TASK
     auto recurringTask = std::make_unique<RecurringTask>("Rent Payment", now + std::chrono::hours(24 * 30), Priority::HIGH, Recurrence::MONTHLY);
-    recurringTask -> setDescrioption("Transfer 500€ to landlord");
+    recurringTask -> setDescription("Transfer 500€ to landlord");
     manager.addTask(std::move(recurringTask));
 
-    
+
     
 
 }
