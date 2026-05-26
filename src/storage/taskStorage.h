@@ -1,4 +1,4 @@
-#ifndef TASK_STORAGE
+#ifndef TASK_STORAGE_H
 #define TASK_STORAGE_H
 
 #include <vector>
@@ -21,4 +21,4 @@ public:
 
 };   
 
-#endif //TASK_STORAGE
+#endif //TASK_STORAGE_H
