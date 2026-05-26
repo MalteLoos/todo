@@ -5,7 +5,7 @@
 #include"taskStorage.h"
 
 // CONSTRUCTOR
-taskStorage::taskStorage(const std::string& path) : storagePath(path) {} 
+taskStorage::taskStorage(const std::filesystem::path& path) : storagePath(path) {} 
 
 // SERIALIZATION 
 std::string taskStorage::serializeTask(const Task& task) const {
@@ -45,7 +45,7 @@ std::unique_ptr<Task> taskStorage::deserializeTask(const std::string& line) cons
     Recurrence recurrence = static_cast<Recurrence>(std::stoi(recurrenceStr));
     bool completed = (completedStr == "1");
 
-    auto task = std::make_unique<Task>(title, deadline, priority, recurrence);
+    auto task = std::make_unique<Task>(title, deadline, priority, Category::OTHER, recurrence);
     
     task->setDescription(description);
     if (completed) {
