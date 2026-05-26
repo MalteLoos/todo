@@ -9,10 +9,12 @@
 #include <memory>
 
 #include "../tasks/task.h" // => taskManager relies on Task definition
+#include "../storage/taskStorage.h" // => taskManager uses storage for persistence
 
 class TaskManager{
 private:
     std::vector<std::unique_ptr<Task>> tasks;
+    taskStorage storage; // => handles file I/O
 
 public:
     // CONSTRUCTOR
@@ -24,8 +26,8 @@ public:
     bool finishTask(const std::string& id);
 
     // STORAGE 
-    void saveToDisk(); // => saves all tasks to tasks,json
-    void loadFromDisk(); // => load tasks from tasks.json into memory
+    bool saveTasks() const; // => saves all tasks to disk
+    bool loadTasks(); // => load tasks from disk into memory
 
     // ALGORITHMS
     Task* searchById(const std::string& id);

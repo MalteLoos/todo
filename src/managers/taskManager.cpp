@@ -149,7 +149,8 @@ std::vector<Task*> TaskManager::getRecurringTasks() const{
 std::vector<Task*> TaskManager::getTimedTasks() const{
     std::vector<Task*> result;
     for (const auto& task : tasks){
-        if (task ->getType() == "timedTask")
+        // Check if task is of type timedTask by checking if it's a timed task
+        if (dynamic_cast<const timedTask*>(task.get()) != nullptr){
             result.push_back(task.get());
         }
     }
@@ -171,5 +172,14 @@ void TaskManager::displayAllTasks()const{
         std::cout << task->toString()<< "\n";
         std::cout << std::string(40, '-') << "\n";
     }
+}
+
+// STORAGE OPERATIONS
+bool TaskManager::saveTasks() const {
+    return storage.saveTasks(tasks);
+}
+
+bool TaskManager::loadTasks() {
+    return storage.loadTasks(tasks);
 }
 
