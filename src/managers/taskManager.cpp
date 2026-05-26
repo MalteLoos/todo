@@ -4,9 +4,10 @@
 #include <memory>
 
 #include "taskManager.h"
+#include "../storage/taskStorage.h"
 #include "../tasks/timed_task.h"
 
-// SUGGESTION ... mutex locing/protection ...?
+// SUGGESTION ... mutex locking/protection ...?
 
 // OPERATIONS UPON TASKS
 void TaskManager::addTask(std::unique_ptr<Task> task){
@@ -175,11 +176,14 @@ void TaskManager::displayAllTasks()const{
 }
 
 // STORAGE OPERATIONS
-bool TaskManager::saveTasks() const {
-    return storage.saveTasks(tasks);
+void TaskManager::saveTasks() const {
+    taskStorage storage("data/tasks.json"); // => creating storage instance with path to file
+    storage.saveTasks(tasks);
 }
 
-bool TaskManager::loadTasks() {
-    return storage.loadTasks(tasks);
+void TaskManager::loadTasks() {
+    tasks.clear();
+    taskStorage storage("data/tasks.json");
+    storage.loadTasks(tasks);
 }
 
