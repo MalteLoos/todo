@@ -21,4 +21,27 @@ int main() {
     taskA -> setDescription("Final debugging and testing, then submit.");
     manager.addTask(std::move(taskA));
 
+    auto taskB = std::make_unique<Task>(
+        "Go Gym session", 
+        now + std::chrono::hours(2), 
+        Priority::LOW, 
+        Category::PERSONAL, 
+        Recurrence::DAILY
+    );
+    taskB->setDescription("Cardio Routine");
+    manager.addTask(std::move(taskB));
+
+    // A) TIMED TASK 
+    auto timedTask = std::make_unique<TimedTask>("C++ Homework Assignment",nextWeek, Priority::MEDIUM, Recurrence::WEEKLY, now, std::chrono::minutes(90));
+    timedTask -> setDescription("Complete 2 out of 4 exercises");
+    manager.addTask(std::move(timedTask));
+
+    // B) RECURRING TASK
+    auto recurringTask = std::make_unique<RecurringTask>("Rent Payment", now + std::chrono::hours(24 * 30), Priority::HIGH, Recurrence::MONTHLY);
+    recurringTask -> setDescrioption("Transfer 500€ to landlord");
+    manager.addTask(std::move(recurringTask));
+
+    
+    
+
 }
