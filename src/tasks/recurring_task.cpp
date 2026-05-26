@@ -28,8 +28,8 @@ std::chrono::system_clock::time_point recurringTask::getNextOccurrence() const{
     return nextOccurrence;
 }
 // SETTERS
-void recurringTask::setRecurrence(Recurrence recurrence){
-    recurrence = recurrence;
+void recurringTask::setRecurrence(Recurrence rec){
+    recurrence = rec;
 }
 
 // UTILITIES
