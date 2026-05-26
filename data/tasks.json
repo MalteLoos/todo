@@ -15,5 +15,15 @@
     "recurrence": "DAILY",
     "priority": "MEDIUM",
     "completed": false
+  },
+  {
+    "type": "TimedTask",
+    "id" : "550e8418-...",
+    "title" : "CPP Project",
+    "deadline" : "2026-06-01T23:59:00",
+    "priority" : "HIGH",
+    "completed" : false,
+    "category" : "education",
+    "labels" : ["#university", "#project", "#cpp"]
   }
 ]
