@@ -26,8 +26,8 @@ public:
     bool finishTask(const std::string& id);
 
     // STORAGE 
-    bool saveTasks() const; // => saves all tasks to disk
-    bool loadTasks(); // => load tasks from disk into memory
+    void saveTasks() const; // => saves all tasks to disk
+    void loadTasks(); // => load tasks from disk into memory
 
     // ALGORITHMS
     Task* searchById(const std::string& id);
