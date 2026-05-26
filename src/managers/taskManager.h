@@ -23,6 +23,10 @@ public:
     bool updateTask(const std::string& id, const Task& updatedTask);
     bool finishTask(const std::string& id);
 
+    // STORAGE 
+    void saveToDisk(); // => saves all tasks to tasks,json
+    void loadFromDisk(); // => load tasks from tasks.json into memory
+
     // ALGORITHMS
     Task* searchById(const std::string& id);
 
