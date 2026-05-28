@@ -17,5 +17,8 @@ target_include_directories(todo PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(todo PRIVATE uuid)
+# Cross-platform UUID library linking
+if(!APPLE)
+    target_link_libraries(todo PRIVATE uuid)
+endif()
 
