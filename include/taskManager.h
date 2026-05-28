@@ -8,8 +8,8 @@
 #include <vector>
 #include <memory>
 
-#include "../tasks/task.h" // => taskManager relies on Task definition
-#include "../storage/taskStorage.h" // => taskManager uses storage for persistence
+#include "tasks/task.h" // => taskManager relies on Task definition
+#include "taskStorage.h" // => taskManager uses storage for persistence
 
 class TaskManager{
 private:

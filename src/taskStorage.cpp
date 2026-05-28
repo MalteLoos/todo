@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "taskStorage.h"
+#include "storage/taskStorage.h"
 
 // CONSTRUCTOR
 taskStorage::taskStorage(const std::filesystem::path& path) : storagePath(path) {} 

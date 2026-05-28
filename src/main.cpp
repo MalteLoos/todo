@@ -2,11 +2,11 @@
 #include <memory>
 #include <chrono>
 
-#include "managers/taskManager.h"
+#include "taskManager.h"
 #include "tasks/task.h"
 #include "tasks/timed_task.h"
 #include "tasks/recurring_task.h"
-#include "storage/taskStorage.h"
+#include "taskStorage.h"
 
 int main() {
     TaskManager manager; // => taskManager instance 
