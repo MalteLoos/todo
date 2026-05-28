@@ -2,7 +2,8 @@
 #define TASK_H
 
 #include <string>
-#include<chrono>
+#include <chrono>
+#include <vector>
 
 enum class Priority{LOW, MEDIUM, HIGH};
 enum class Recurrence{NONE, DAILY, WEEKLY, MONTHLY, YEARLY};

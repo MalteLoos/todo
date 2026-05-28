@@ -12,4 +12,5 @@ add_executable(todo
     src/managers/taskManager.cpp
     src/storage/taskStorage.cpp
 )
+target_link_libraries(todo PRIVATE uuid)
 
