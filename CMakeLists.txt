@@ -18,7 +18,7 @@ target_include_directories(todo PRIVATE
 )
 
 # Cross-platform UUID library linking
-if(!APPLE)
+if(NOT APPLE)
     target_link_libraries(todo PRIVATE uuid)
 endif()
 
