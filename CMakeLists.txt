@@ -9,8 +9,8 @@ add_executable(todo
     src/tasks/task.cpp
     src/tasks/recurring_task.cpp
     src/tasks/timed_task.cpp
-    src/managers/taskManager.cpp
-    src/storage/taskStorage.cpp
+    src/taskManager.cpp
+    src/taskStorage.cpp
 )
 
 target_include_directories(todo PRIVATE
