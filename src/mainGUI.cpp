@@ -17,6 +17,8 @@
 #include <QWidget>
 #include <QtCore/qnamespace.h>
 #include <QtCore/qobject.h>
+#include <QtWidgets/qboxlayout.h>
+#include <QtWidgets/qlabel.h>
 #include <chrono>
 #include <iomanip>
 #include <memory>
@@ -304,6 +306,11 @@ int main(int argc, char *argv[]) {
   QPushButton *cancelButton = new QPushButton("Cancel");
 
   QLineEdit *titleEdit = new QLineEdit;
+  QLabel *titleLabelEdit = new QLabel("Title:");
+  QHBoxLayout *titleLyaout = new QHBoxLayout;
+  titleLyaout->addWidget(titleLabelEdit);
+  titleLyaout->addWidget(titleEdit);
+
   QTextEdit *descriptionEdit = new QTextEdit;
   descriptionEdit->setFixedHeight(descrHeight);
 
@@ -325,7 +332,7 @@ int main(int argc, char *argv[]) {
   // === edit layouts ===
 
   QFormLayout *editScreen = new QFormLayout;
-  editScreen->addRow("Title:", titleEdit);
+  editScreen->addRow(titleLyaout);
   editScreen->addRow("Description:", descriptionEdit);
   editScreen->addRow("Label:", labelEdit);
   editScreen->addRow("Deadline:", deadlineEdit);
@@ -333,6 +340,10 @@ int main(int argc, char *argv[]) {
   editScreen->addRow("Category:", category);
   editScreen->addRow("Recurrence:", recurrence);
   editScreen->addRow(doneButton, cancelButton);
+  // editScreen->setFieldGrowthPolicy(
+  //   QFormLayout::AllNonFixedFieldsGrow); // such that the right lineEdit
+  //  element expands as the window
+  //  grows
 
   QDialog *editDialog = new QDialog;
   editDialog->setLayout(editScreen);
