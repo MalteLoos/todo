@@ -133,6 +133,14 @@ std::vector<Task *> TaskManager::getTasksSortedByDeadline() const {
   return sortedTasks;
 }
 
+void TaskManager::getTasksSortedByDeadline(
+    std::vector<Task *> &sortedTasks) const {
+  std::sort(sortedTasks.begin(), sortedTasks.end(),
+            [](const Task *a, const Task *b) {
+              return a->getDeadline() < b->getDeadline();
+            });
+}
+
 std::vector<Task *> TaskManager::getTasksSortedByPriority() const {
   std::vector<Task *> sortedTasks;
   for (const auto &task : tasks) {
@@ -144,6 +152,15 @@ std::vector<Task *> TaskManager::getTasksSortedByPriority() const {
                      static_cast<int>(b->getPriority());
             });
   return sortedTasks;
+}
+
+void TaskManager::getTasksSortedByPriority(
+    std::vector<Task *> &sortedTasks) const {
+  std::sort(sortedTasks.begin(), sortedTasks.end(),
+            [](const Task *a, const Task *b) {
+              return static_cast<int>(a->getPriority()) >
+                     static_cast<int>(b->getPriority());
+            });
 }
 
 std::vector<Task *> TaskManager::getRecurringTasks() const {
@@ -164,6 +181,72 @@ std::vector<Task *> TaskManager::getTimedTasks() const {
       result.push_back(task.get());
     }
   }
+  return result;
+}
+std::vector<Task *> TaskManager::getTasksForView(const std::string &keyword,
+                                                 FilterMode filtermode,
+                                                 SortMode sortmode) const {
+  std::vector<Task *> result;
+
+  switch (filtermode) {
+  case FilterMode::ALL: // deafult filter option
+    result = getTasksSortedByDeadline();
+    break;
+  case FilterMode::PRIO_LOW:
+    result = filterByPriority(Priority::LOW);
+    break;
+  case FilterMode::PRIO_MED:
+    result = filterByPriority(Priority::MEDIUM);
+    break;
+  case FilterMode::PRIO_HIGH:
+    result = filterByPriority(Priority::HIGH);
+    break;
+  case FilterMode::COMPLETED:
+    result = filterByStatus(true);
+    break;
+  case FilterMode::OVERDUE:
+    result = getOverdueTasks();
+    break;
+  case FilterMode::RECURRING:
+    result = getRecurringTasks();
+    break;
+  case FilterMode::TIMED:
+    result = getTimedTasks();
+    break;
+  }
+
+  if (!keyword.empty()) {
+    // lowercase the keyword ONCE (not inside the loop — no point redoing it per
+    // task)
+    std::string lowerKeyword = keyword;
+    std::transform(lowerKeyword.begin(), lowerKeyword.end(),
+                   lowerKeyword.begin(), ::tolower);
+
+    // erase-remove: drop every task whose title does NOT contain the keyword
+    result.erase(std::remove_if(result.begin(), result.end(),
+                                [&lowerKeyword](const Task *task) {
+                                  std::string lowerTitle = task->getTitle();
+                                  std::transform(lowerTitle.begin(),
+                                                 lowerTitle.end(),
+                                                 lowerTitle.begin(), ::tolower);
+                                  // TRUE  -> this task is removed
+                                  // so we return true when the keyword is NOT
+                                  // found
+                                  return lowerTitle.find(lowerKeyword) ==
+                                         std::string::npos;
+                                }),
+                 result.end());
+  }
+
+  switch (sortmode) {
+  case SortMode::DEADLINE:
+    getTasksSortedByDeadline(result);
+    break;
+  case SortMode::PRIOITY:
+    getTasksSortedByPriority(result);
+    break;
+  }
+
   return result;
 }
 

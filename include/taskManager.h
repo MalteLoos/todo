@@ -12,6 +12,18 @@
 #include "taskStorage.h" // => taskManager uses storage for persistence
 #include "tasks/task.h"  // => taskManager relies on Task definition
 
+enum class FilterMode {
+  ALL,
+  PRIO_LOW,
+  PRIO_MED,
+  PRIO_HIGH,
+  COMPLETED,
+  OVERDUE,
+  RECURRING,
+  TIMED
+};
+enum class SortMode { DEADLINE, PRIOITY };
+
 class TaskManager {
 private:
   std::vector<std::unique_ptr<Task>> tasks;
@@ -45,12 +57,18 @@ public:
 
   std::vector<Task *>
   getTasksSortedByDeadline() const; // => sorting tasks by their deadlines
+  void getTasksSortedByDeadline(std::vector<Task *> &sortedTasks) const;
   std::vector<Task *>
   getTasksSortedByPriority() const; // => sort: highest to lowest
+  void getTasksSortedByPriority(std::vector<Task *> &sortedTasks) const;
 
   std::vector<Task *>
   getRecurringTasks() const;                 // => retrieve all repeated tasks
   std::vector<Task *> getTimedTasks() const; // => retrieved all tasks w/ timer
+
+  std::vector<Task *> getTasksForView(const std::string &keyword,
+                                      FilterMode filtermode,
+                                      SortMode sortmode) const;
 
   // UTILITIES
   size_t getTaskCount() const;
