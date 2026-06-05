@@ -117,9 +117,14 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
     auto storage = users[userId]->storage;
     switch(m.type) {
         case Type::ADD:
-            // add task: assumes only one task was send
-            if (!m.tasks.empty())
+            // add task: assumes only one task was sent
+            if (!m.tasks.empty()) {
+                auto notify = Msg{Type::ADD, {}};
+                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->addTask(std::move(m.tasks.front()));
+                lock.unlock();
+                notifyUser(fd, userId, notify.serialize());
+            }
             break;
         case Type::GET: {
                 // get one task
@@ -138,14 +143,24 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
             }
             break;
         case Type::UPDATE:
-            // update the task
-            if (!m.tasks.empty())
+            // update the task and notify others
+            if (!m.tasks.empty()) {
+                auto notify = Msg{Type::UPDATE, {}};
+                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->updateTask(m.tasks.front());
+                lock.unlock();
+                notifyUser(fd, userId, notify.serialize());
+            }
             break;
         case Type::DELETE:
-            // delete the task
-            if (!m.tasks.empty())
+            // delete the task and notify others
+            if (!m.tasks.empty()) {
+                auto notify = Msg{Type::DELETE, {}};
+                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->deleteTask(m.tasks.front());
+                lock.unlock();
+                notifyUser(fd, userId, notify.serialize());
+            }
             break;
     }
 }

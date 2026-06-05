@@ -23,13 +23,13 @@ class TaskClient {
         void updateTask(const Task& task);
         void deleteTask(const std::string& taskId);
 
-        void setNotifyCallback(std::function<void(std::vector<std::unique_ptr<Task>>)> cb);
+        void setNotifyCallback(std::function<void(Type, std::vector<std::unique_ptr<Task>>)> cb);
 
     private:
         int fd = -1;
         std::thread notifyThread;
         std::atomic<bool> running{false};
-        std::function<void(std::vector<std::unique_ptr<Task>>)> onNotify;
+        std::function<void(Type, std::vector<std::unique_ptr<Task>>)> onNotify;
 
         std::mutex queueMtx;
         std::condition_variable queueCv;

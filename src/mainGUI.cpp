@@ -152,6 +152,20 @@ int main(int argc, char *argv[]) {
           refreshTaskList(taskList, manager, search, filter, sorting);
       }, Qt::QueuedConnection);
   });
+  // apply changes pushed by other clients without re-sending to server
+  client->setNotifyCallback([&](Type type, std::vector<std::unique_ptr<Task>> tasks) {
+      QMetaObject::invokeMethod(window, [&manager, &taskList, &search, &filter, &sorting,
+                                          type, tasks = std::move(tasks)]() mutable {
+          for (auto& t : tasks) {
+              if (!t) continue;
+              if (type == Type::ADD)    manager.applyAdd(std::move(t));
+              else if (type == Type::UPDATE) manager.applyUpdate(std::move(t));
+              else if (type == Type::DELETE) manager.applyDelete(t->getId());
+          }
+          refreshTaskList(taskList, manager, search, filter, sorting);
+      }, Qt::QueuedConnection);
+  });
+
   manager.loadTasks();
 
   // startup:

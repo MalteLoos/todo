@@ -266,6 +266,19 @@ void TaskManager::displayAllTasks() const {
   }
 }
 
+void TaskManager::applyUpdate(std::unique_ptr<Task> task) {
+  auto it = std::find_if(tasks.begin(), tasks.end(),
+      [&](const std::unique_ptr<Task>& t) { return t && t->getId() == task->getId(); });
+  if (it != tasks.end()) *it = std::move(task);
+}
+
+void TaskManager::applyDelete(const std::string& id) {
+  tasks.erase(
+      std::remove_if(tasks.begin(), tasks.end(),
+          [&](const std::unique_ptr<Task>& t) { return t && t->getId() == id; }),
+      tasks.end());
+}
+
 void TaskManager::loadTasks() {
   tasks.clear();
   tasks = std::move(client->getTasks());

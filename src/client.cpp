@@ -44,7 +44,7 @@ TaskClient::~TaskClient() {
     if (notifyThread.joinable()) notifyThread.join();
 }
 
-void TaskClient::setNotifyCallback(std::function<void(std::vector<std::unique_ptr<Task>>)> cb) {
+void TaskClient::setNotifyCallback(std::function<void(Type, std::vector<std::unique_ptr<Task>>)> cb) {
     onNotify = std::move(cb);
 }
 
@@ -98,8 +98,9 @@ void TaskClient::notifyLoop() {
         if (recv(fd, buf.data(), len, MSG_WAITALL) <= 0) break;
 
         Msg msg = Msg::deserialize(buf);
-        if (msg.type == Type::NOTIFY && onNotify) {
-            onNotify(std::move(msg.tasks));
+        if ((msg.type == Type::NOTIFY || msg.type == Type::ADD ||
+             msg.type == Type::UPDATE || msg.type == Type::DELETE) && onNotify) {
+            onNotify(msg.type, std::move(msg.tasks));
         } else {
             std::unique_lock lock(queueMtx);
             msgQueue.push(std::move(msg));

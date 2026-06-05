@@ -39,6 +39,11 @@ public:
 
   void addTask(std::unique_ptr<Task> tasks);
   bool deleteTask(const std::string &id);
+
+  // apply changes from server push without sending back to server
+  void applyAdd(std::unique_ptr<Task> task) { tasks.push_back(std::move(task)); }
+  void applyUpdate(std::unique_ptr<Task> task);
+  void applyDelete(const std::string& id);
   bool updateTask(const std::string &id, std::unique_ptr<Task> updatedTask);
   bool finishTask(const std::string &id);
 
