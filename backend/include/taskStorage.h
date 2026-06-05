@@ -17,9 +17,11 @@ public:
     // CONSTRUCTOR
     taskStorage(const std::filesystem::path& path = "data/tasks.json");
     bool saveTasks(const std::vector<std::unique_ptr<Task>>& tasks) const; // => save tasks to disk
-    bool loadTasks(std::vector<std::unique_ptr<Task>>& tasks); // => load tasks 
-
-
+    bool addTask(const std::unique_ptr<Task>& task) const; // => add task to disk
+    bool updateTask(std::unique_ptr<Task>& task); // -> update task on disk
+    bool deleteTask(std::unique_ptr<Task>& task); // -> delete task from disk
+    bool loadTasks(std::vector<std::unique_ptr<Task>>& tasks); // => load tasks from disk
+    bool loadTask(std::unique_ptr<Task>& task); // => load task from disk
 };   
 
 #endif //TASK_STORAGE_H

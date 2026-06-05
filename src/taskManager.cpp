@@ -10,7 +10,9 @@
 
 // OPERATIONS UPON TASKS
 void TaskManager::addTask(std::unique_ptr<Task> task) {
-  tasks.push_back(std::move(task)); // => adding new task to the vector
+  client->addTask(*task);
+  tasks.push_back(std::move(task));
+  if (onChange) onChange();
 }
 
 bool TaskManager::deleteTask(const std::string &id) {
@@ -23,7 +25,8 @@ bool TaskManager::deleteTask(const std::string &id) {
   if (iterator != tasks.end()) {
 
     tasks.erase(iterator, tasks.end());
-
+    client->deleteTask(id);
+    if (onChange) onChange();
     return true;
   }
 
@@ -34,15 +37,11 @@ bool TaskManager::updateTask(const std::string &id,
                              std::unique_ptr<Task> updatedTask) {
   auto iterator = std::find_if(
       tasks.begin(), tasks.end(),
-      [&id](const std::unique_ptr<Task> &task) { return task->getId() == id; });
+      [&id](const std::unique_ptr<Task> &task) { return task && task->getId() == id; });
   if (iterator != tasks.end()) {
+    client->updateTask(*updatedTask);
     *iterator = std::move(updatedTask);
-
-    // (*iterator)->setTitle(updatedTask.getTitle());
-    // (*iterator)->setDescription(updatedTask.getDescription());
-    // (*iterator)->setPriority(updatedTask.getPriority());
-    // (*iterator)->setRecurrence(updatedTask.getRecurrence());
-    // (*iterator)->setCategory(updatedTask.getCategory());
+    if (onChange) onChange();
     return true; // => a) found and updated
   }
   return false; // => b) not found
@@ -54,6 +53,8 @@ bool TaskManager::finishTask(const std::string &id) {
       [&id](const std::unique_ptr<Task> &task) { return task->getId() == id; });
   if (iterator != tasks.end()) {
     (*iterator)->setCompleted(true);
+    client->updateTask(**iterator);
+    if (onChange) onChange();
     return true;
   }
   return false;
@@ -265,15 +266,8 @@ void TaskManager::displayAllTasks() const {
   }
 }
 
-// STORAGE OPERATIONS
-void TaskManager::saveTasks() const {
-  taskStorage storage(
-      "data/tasks.json"); // => creating storage instance with path to file
-  storage.saveTasks(tasks);
-}
-
 void TaskManager::loadTasks() {
   tasks.clear();
-  taskStorage storage("data/tasks.json");
-  storage.loadTasks(tasks);
+  tasks = std::move(client->getTasks());
+  if (onChange) onChange();
 }

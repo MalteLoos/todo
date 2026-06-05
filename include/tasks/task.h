@@ -25,6 +25,7 @@ protected:
 public:
     // CONSTRUCTORS 
     Task();
+    Task(const std::string& title);
     Task(const std::string& title, 
         const std::chrono::system_clock::time_point& deadline,
         Priority priority,
@@ -46,6 +47,7 @@ public:
     std::vector<std::string> getLabel() const;
 
     // SETTERS
+    void setId(const std::string& id);
     void setTitle(const std::string& title);
     void setDescription(const std::string& description);
     void setPriority(Priority priority);

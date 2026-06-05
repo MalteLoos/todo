@@ -32,6 +32,8 @@
 #include "tasks/task.h"
 #include "tasks/timed_task.h"
 
+#include "client.hpp"
+
 void refreshTaskList(QListWidget *taskList, const TaskManager &manager,
                      QLineEdit *search, QComboBox *filter, QComboBox *sorting) {
 
@@ -69,7 +71,13 @@ void refreshTaskList(QListWidget *taskList, const TaskManager &manager,
 };
 
 int main(int argc, char *argv[]) {
+  
+  std::string userid = "user";
+  if (argc > 1) {
+    userid = argv[1];
+  }
 
+  std::shared_ptr<TaskClient> client(std::make_shared<TaskClient>("127.0.0.1", 8080, userid));
   QApplication app(argc, argv);
 
   // usefull variables
@@ -138,12 +146,17 @@ int main(int argc, char *argv[]) {
 
   // === home connencts ===
 
-  TaskManager manager;
+  TaskManager manager(client);
+  manager.setOnChange([&]() {
+      QMetaObject::invokeMethod(window, [&]() {
+          refreshTaskList(taskList, manager, search, filter, sorting);
+      }, Qt::QueuedConnection);
+  });
   manager.loadTasks();
 
   // startup:
 
-  refreshTaskList(taskList, manager, search, filter, sorting);
+  //refreshTaskList(taskList, manager, search, filter, sorting);
 
   // delete button
   QObject::connect(
@@ -158,8 +171,6 @@ int main(int argc, char *argv[]) {
               selected->data(Qt::UserRole).toString().toStdString();
           // 4. tell the manager to delete it
           manager.deleteTask(taskId);
-          // 5. save
-          manager.saveTasks();
           // 6. refresh the list
           refreshTaskList(taskList, manager, search, filter, sorting);
         }
@@ -182,7 +193,7 @@ int main(int argc, char *argv[]) {
                    });
   QObject::connect(
       taskList, &QListWidget::itemChanged,
-      [taskList, &manager, search, filter, sorting](QListWidgetItem *item) {
+      [taskList, &manager, &client, search, filter, sorting](QListWidgetItem *item) {
         // 1. read the task ID from the item (Qt::UserRole — same as always)
         std::string taskId = item->data(Qt::UserRole).toString().toStdString();
         Task *task = manager.searchById(taskId);
@@ -190,8 +201,8 @@ int main(int argc, char *argv[]) {
         if (task) {
           // 2. set that task's completed state based on the checkbox
           task->setCompleted(item->checkState() == Qt::Checked);
-          // 3. save
-          manager.saveTasks();
+          // 3. send update to server
+          client->updateTask(*task);
           // 4. refresh
           refreshTaskList(taskList, manager, search, filter, sorting);
         }
@@ -262,7 +273,6 @@ int main(int argc, char *argv[]) {
       if (task) { // if task != nullptr -> set the Info window values
 
         // access different elements from the task object and display them
-
         titleInfo->setText(QString::fromStdString(task->getTitle()));
         descriptionInfo->setPlainText(
             QString::fromStdString(task->getDescription()));
@@ -442,10 +452,13 @@ int main(int argc, char *argv[]) {
         if (editingId.empty()) {
           manager.addTask(std::move(task));
         } else {
+          task->setId(editingId);
+          // preserve completed state from original task
+          Task *original = manager.searchById(editingId);
+          if (original) task->setCompleted(original->isCompleted());
           manager.updateTask(editingId, std::move(task));
         }
 
-        manager.saveTasks();
         refreshTaskList(taskList, manager, search, filter, sorting);
         editDialog->hide();
       });

@@ -1,6 +1,5 @@
 // Planned task operations: add - delete - update - finish - search - filter -
 // sort
-
 #ifndef TASKMANAGER_H
 #define TASKMANAGER_H
 
@@ -8,9 +7,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
-#include "taskStorage.h" // => taskManager uses storage for persistence
 #include "tasks/task.h"  // => taskManager relies on Task definition
+
+#include "client.hpp"
 
 enum class FilterMode {
   ALL,
@@ -27,11 +28,14 @@ enum class SortMode { DEADLINE, PRIOITY };
 class TaskManager {
 private:
   std::vector<std::unique_ptr<Task>> tasks;
-  taskStorage storage; // => handles file I/O
+  std::function<void()> onChange;
 
 public:
   // CONSTRUCTOR
-  TaskManager() = default;
+  std::shared_ptr<TaskClient> client;
+  TaskManager(std::shared_ptr<TaskClient> client): client(client) {};
+
+  void setOnChange(std::function<void()> cb) { onChange = std::move(cb); }
 
   void addTask(std::unique_ptr<Task> tasks);
   bool deleteTask(const std::string &id);

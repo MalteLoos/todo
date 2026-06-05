@@ -69,6 +69,8 @@ static std::string timePointToString(const std::chrono::system_clock::time_point
 }
 
 // CONSTRUCTORS
+Task::Task(const std::string& title): title(title) {}
+
 Task::Task():
     id(generateID()),
     title("Untitled Task"),
@@ -119,6 +121,9 @@ std::vector<std::string> Task::getLabel() const{
 //SETTERS
 void Task:: setTitle(const std::string& title){
     this -> title = title;
+}
+void Task::setId(const std::string& newId){
+    this->id = newId;
 }
 void Task::setDescription(const std::string& description){
     this -> description = description; 

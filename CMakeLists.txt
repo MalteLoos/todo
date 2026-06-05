@@ -21,39 +21,42 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 # Console executable
-add_executable(todo
-    src/main.cpp
-    src/tasks/task.cpp
-    src/tasks/recurring_task.cpp
-    src/tasks/timed_task.cpp
-    src/taskManager.cpp
-    src/taskStorage.cpp
-)
-
-target_include_directories(todo PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+#add_executable(todo
+#    src/main.cpp
+#    src/tasks/task.cpp
+#    src/tasks/recurring_task.cpp
+#    src/tasks/timed_task.cpp
+#    src/taskManager.cpp
+#)
+#
+#target_include_directories(todo PRIVATE
+#    ${CMAKE_CURRENT_SOURCE_DIR}/include
+#)
 
 # Cross-platform UUID library linking
-if(NOT APPLE)
-    target_link_libraries(todo PRIVATE uuid)
-endif()
+#if(NOT APPLE)
+#    target_link_libraries(todo PRIVATE uuid)
+#endif()
+
+add_subdirectory(backend)
 
 # GUI executable
 add_executable(todo_gui
     src/mainGUI.cpp
+    src/client.cpp
     src/tasks/task.cpp
     src/tasks/recurring_task.cpp
     src/tasks/timed_task.cpp
     src/taskManager.cpp
-    src/taskStorage.cpp
 )
 
 target_include_directories(todo_gui PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/include
 )
 
-target_link_libraries(todo_gui PRIVATE Qt6::Widgets)
+find_package(Threads REQUIRED)
+target_link_libraries(todo_gui PRIVATE Qt6::Widgets Threads::Threads)
 
 if(NOT APPLE)
     target_link_libraries(todo_gui PRIVATE uuid)

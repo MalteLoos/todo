@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 #include "taskStorage.h"
 
@@ -35,7 +36,7 @@ std::unique_ptr<Task> taskStorage::deserializeTask(const std::string& line) cons
         !std::getline(ss, deadlineStr, '|') ||
         !std::getline(ss, priorityStr, '|') ||
         !std::getline(ss, recurrenceStr, '|') ||
-        !std::getline(ss, completedStr, '|')) {
+        !std::getline(ss, completedStr)) {
         return nullptr;
     }
 
@@ -46,12 +47,10 @@ std::unique_ptr<Task> taskStorage::deserializeTask(const std::string& line) cons
     bool completed = (completedStr == "1");
 
     auto task = std::make_unique<Task>(title, deadline, priority, Category::OTHER, recurrence);
-    
+    task->setId(id);
     task->setDescription(description);
-    if (completed) {
-        task->setCompleted(true);
-    }
-    
+    if (completed) task->setCompleted(true);
+
     return task;
 }
 
@@ -81,6 +80,64 @@ bool taskStorage::saveTasks(const std::vector<std::unique_ptr<Task>>& tasks) con
     }
 }
 
+// add Task
+bool taskStorage::addTask(const std::unique_ptr<Task>& task) const {
+    try {
+        if (!task) return false;
+
+        if (storagePath.has_parent_path()) {
+            std::filesystem::create_directories(storagePath.parent_path());
+        }
+
+        std::ofstream outFile(storagePath, std::ios::app); // always writes to the end of the file
+        if (!outFile.is_open()) return false;
+
+        outFile << serializeTask(*task) << "\n";
+        outFile.close();
+        return true;
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem Error while saving: " << e.what() << "\n";
+        return false;
+    }
+}
+
+// Update
+bool taskStorage::updateTask(std::unique_ptr<Task>& task) {
+     // load tasks
+    std::vector<std::unique_ptr<Task>> tasks;
+    if (!loadTasks(tasks)) return false;
+
+    // find task to be updated
+    auto it = std::find_if(tasks.begin(), tasks.end(), [&](const std::unique_ptr<Task>& t) {
+        return t->getId() == task->getId();
+    });
+    if (it == tasks.end()) return false;
+
+    // update and save
+    *it = std::move(task);
+    return saveTasks(tasks);
+}
+
+// Delete
+bool taskStorage::deleteTask(std::unique_ptr<Task>& task) {
+    // load tasks
+    std::vector<std::unique_ptr<Task>> tasks;
+    if (!loadTasks(tasks)) return false;
+
+    // Claude: how to remove an elemnt form a vecotr based on member variable:
+    tasks.erase(
+        // move matching element to the end
+        std::remove_if(tasks.begin(), tasks.end(), [&](const std::unique_ptr<Task>& t) {
+            return t->getId() == task->getId();
+        }),
+        // remove last element
+        tasks.end()
+    );
+
+    // save
+    return saveTasks(tasks);
+}
+
 // B) LOAD
 bool taskStorage::loadTasks(std::vector<std::unique_ptr<Task>>& tasks) {
     if (!std::filesystem::exists(storagePath)) {
@@ -101,5 +158,22 @@ bool taskStorage::loadTasks(std::vector<std::unique_ptr<Task>>& tasks) {
     }
 
     inFile.close();
+    return true;
+}
+
+// load task
+bool taskStorage::loadTask(std::unique_ptr<Task>& task) {
+    // load tasks
+    std::vector<std::unique_ptr<Task>> tasks;
+    if (!loadTasks(tasks)) return false;
+
+    // find task
+    auto it = std::find_if(tasks.begin(), tasks.end(), [&](const std::unique_ptr<Task>& t) {
+        return t->getId() == task->getId();
+    });
+    if (it == tasks.end()) return false;
+
+    // return task
+    task = std::move(*it);
     return true;
 }
