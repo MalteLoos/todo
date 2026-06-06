@@ -1,6 +1,7 @@
 #include "backend.hpp"
 #include <algorithm>
 #include "msg.hpp"
+#include "reminder.hpp"
 
 // Claude: how to write a server that handles multiple users with multiple clients each:
 
@@ -20,12 +21,14 @@ void Backend::handleConnection(int fd) {
     std::string userId = receiveAuth(fd);
     if (userId.empty()) { close(fd); return; }
 
-    // add new connection to user
+    // add new connection to user and start reminder if needed
     {
         std::unique_lock lock(usersMtx);
         if (!users.contains(userId))
             users[userId] = std::make_shared<User>(userId);
         users[userId]->connections.push_back(fd);
+        ensureReminder(userId);
+        refreshReminder(userId);
     }
 
     // receive loop
@@ -99,6 +102,32 @@ void Backend::setKeepalive(int fd) {
     setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT,   &count,    sizeof(count));
 }
 
+// start reminder scheduler for user if not already running
+void Backend::ensureReminder(const std::string& userId) {
+    auto& user = users[userId];
+    if (user->reminder) return;
+    user->reminder = std::make_unique<ReminderScheduler>([this, userId](const Task& task) {
+        // send NOTIFY with the due task to all connections of this user
+        std::vector<std::unique_ptr<Task>> tasks;
+        tasks.push_back(std::make_unique<Task>(task));
+        auto data = Msg{Type::NOTIFY, std::move(tasks)}.serialize();
+        std::unique_lock lock(usersMtx);
+        auto it = users.find(userId);
+        if (it == users.end()) return;
+        for (int conn : it->second->connections)
+            sendMessage(conn, data);
+    });
+}
+
+// reload tasks from storage into the reminder queue (call after any mutation)
+void Backend::refreshReminder(const std::string& userId) {
+    auto& user = users[userId];
+    if (!user->reminder) return;
+    std::vector<std::unique_ptr<Task>> tasks;
+    user->storage->loadTasks(tasks);
+    user->reminder->update(tasks);
+}
+
 // processincoming msgs
 void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& msg) {
     // read msg
@@ -122,6 +151,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
                 auto notify = Msg{Type::ADD, {}};
                 notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->addTask(std::move(m.tasks.front()));
+                refreshReminder(userId);
                 lock.unlock();
                 notifyUser(fd, userId, notify.serialize());
             }
@@ -139,6 +169,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
                 // all tasks
                 std::vector<std::unique_ptr<Task>> tasks;
                 storage->loadTasks(tasks);
+                refreshReminder(userId);
                 sendMessage(fd, Msg{Type::GETALL, std::move(tasks)}.serialize());
             }
             break;
@@ -148,6 +179,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
                 auto notify = Msg{Type::UPDATE, {}};
                 notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->updateTask(m.tasks.front());
+                refreshReminder(userId);
                 lock.unlock();
                 notifyUser(fd, userId, notify.serialize());
             }
@@ -158,6 +190,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
                 auto notify = Msg{Type::DELETE, {}};
                 notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
                 storage->deleteTask(m.tasks.front());
+                refreshReminder(userId);
                 lock.unlock();
                 notifyUser(fd, userId, notify.serialize());
             }

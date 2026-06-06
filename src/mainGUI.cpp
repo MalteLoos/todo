@@ -3,6 +3,7 @@
 #include <QComboBox>
 #include <QDateTimeEdit>
 #include <QDialog>
+#include <QMessageBox>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -156,11 +157,29 @@ int main(int argc, char *argv[]) {
   client->setNotifyCallback([&](Type type, std::vector<std::unique_ptr<Task>> tasks) {
       QMetaObject::invokeMethod(window, [&manager, &taskList, &search, &filter, &sorting,
                                           type, tasks = std::move(tasks)]() mutable {
+          if (type == Type::NOTIFY) {
+              // show reminder dialog for each due task
+              for (auto& t : tasks) {
+                  if (!t) continue;
+                  QMessageBox* box = new QMessageBox();
+                  box->setWindowTitle("Reminder");
+                  box->setText(QString("Task due: <b>%1</b>")
+                      .arg(QString::fromStdString(t->getTitle())));
+                  if (!t->getDescription().empty())
+                      box->setInformativeText(QString::fromStdString(t->getDescription()));
+                  box->setIcon(QMessageBox::Information);
+                  box->setAttribute(Qt::WA_DeleteOnClose);
+                  box->show();
+              }
+              refreshTaskList(taskList, manager, search, filter, sorting);
+              return;
+          }
+
           for (auto& t : tasks) {
               if (!t) continue;
-              if (type == Type::ADD)    manager.applyAdd(std::move(t));
-              else if (type == Type::UPDATE) manager.applyUpdate(std::move(t));
-              else if (type == Type::DELETE) manager.applyDelete(t->getId());
+              if (type == Type::ADD)         manager.applyAdd(std::move(t));
+              else if (type == Type::UPDATE)  manager.applyUpdate(std::move(t));
+              else if (type == Type::DELETE)  manager.applyDelete(t->getId());
           }
           refreshTaskList(taskList, manager, search, filter, sorting);
       }, Qt::QueuedConnection);

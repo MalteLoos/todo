@@ -11,11 +11,13 @@
 #include <unordered_map>
 #include <optional>
 #include "taskStorage.h"
+#include "reminder.hpp"
 
 struct User {
     std::string id;
     std::vector<int> connections;
     std::shared_ptr<taskStorage> storage;
+    std::unique_ptr<ReminderScheduler> reminder;
 
     User(const std::string& id) : id(id), storage(std::make_shared<taskStorage>(id + "/data.json")) {}
 };
@@ -37,4 +39,6 @@ class Backend {
         void notifyUser(int sender, const std::string& userId, const std::vector<uint8_t>& data);
 
         void processMessage(std::string userId, int fd, std::vector<uint8_t>& msg);
+        void ensureReminder(const std::string& userId);
+        void refreshReminder(const std::string& userId);
 };
