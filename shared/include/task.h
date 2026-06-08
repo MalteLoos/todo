@@ -4,6 +4,7 @@
 #include <string>
 #include <chrono>
 #include <vector>
+#include <memory>
 
 enum class Priority{LOW, MEDIUM, HIGH};
 enum class Recurrence{NONE, DAILY, WEEKLY, MONTHLY, YEARLY};
@@ -58,6 +59,9 @@ public:
 
     //UTILITIES
     bool isOverdue() const;
+
+    std::string serialize() const;
+    static std::unique_ptr<Task> deserialize(const std::string& line);
 
     virtual std::string toString() const;
     virtual std::string getType() const{

@@ -10,8 +10,6 @@
 class taskStorage{
 private:
     std::filesystem::path storagePath; // => path to the storage file (e.g., tasks.json)
-    std::string serializeTask(const Task& task) const; // => convert a Task object to a JSON string
-    std::unique_ptr<Task> deserializeTask(const std::string& line) const; // => convert a JSON
 
 public: 
     // CONSTRUCTOR

@@ -183,3 +183,41 @@ std::string Task::timePointToString(const std::chrono::system_clock::time_point&
     ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
     return ss.str();
 }
+
+std::string Task::serialize() const {
+    std::stringstream ss;
+    ss << id << "|"
+       << title << "|"
+       << description << "|"
+       << std::chrono::system_clock::to_time_t(deadline) << "|"
+       << static_cast<int>(priority) << "|"
+       << static_cast<int>(recurrence) << "|"
+       << (completed ? "1" : "0");
+    return ss.str();
+}
+
+std::unique_ptr<Task> Task::deserialize(const std::string& line) {
+    std::stringstream ss(line);
+    std::string id, title, description, deadlineStr, priorityStr, recurrenceStr, completedStr;
+
+    if (!std::getline(ss, id, '|') ||
+        !std::getline(ss, title, '|') ||
+        !std::getline(ss, description, '|') ||
+        !std::getline(ss, deadlineStr, '|') ||
+        !std::getline(ss, priorityStr, '|') ||
+        !std::getline(ss, recurrenceStr, '|') ||
+        !std::getline(ss, completedStr))
+        return nullptr;
+
+    auto deadline = std::chrono::system_clock::from_time_t(std::stoll(deadlineStr));
+    auto task = std::make_unique<Task>(
+        title, deadline,
+        static_cast<Priority>(std::stoi(priorityStr)),
+        Category::OTHER,
+        static_cast<Recurrence>(std::stoi(recurrenceStr))
+    );
+    task->setId(id);
+    task->setDescription(description);
+    if (completedStr == "1") task->setCompleted(true);
+    return task;
+}
