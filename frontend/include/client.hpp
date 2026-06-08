@@ -9,8 +9,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <queue>
-#include "tasks/task.h"
-#include "../backend/include/msg.hpp"
+#include "task.h"
+#include "msg.hpp"
 
 class TaskClient {
     public:

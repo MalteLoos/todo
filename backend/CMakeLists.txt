@@ -11,12 +11,13 @@ add_executable(todo_backend
     src/backend.cpp
     src/taskStorage.cpp
     src/reminder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/tasks/task.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/tasks/recurring_task.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/tasks/timed_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/task.cpp
 )
 
-target_include_directories(todo_backend PRIVATE include ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(todo_backend PRIVATE
+    include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/include
+)
 
 find_package(Threads REQUIRED)
 target_link_libraries(todo_backend PRIVATE Threads::Threads)

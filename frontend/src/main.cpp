@@ -3,7 +3,7 @@
 #include <chrono>
 
 #include "taskManager.h"
-#include "tasks/task.h"
+#include "task.h"
 #include "tasks/timed_task.h"
 #include "tasks/recurring_task.h"
 #include "taskStorage.h"

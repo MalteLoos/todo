@@ -30,7 +30,7 @@
 // Backend (Student 1)
 #include "taskManager.h"
 #include "tasks/recurring_task.h"
-#include "tasks/task.h"
+#include "task.h"
 #include "tasks/timed_task.h"
 
 #include "client.hpp"
