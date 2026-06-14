@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <stdexcept>
 
-// Claude: implement the client with tcp keepalive:
+// Claude, code was edited afterwards: implement the client with tcp keepalive:
 TaskClient::TaskClient(const std::string& host, int port, const std::string& userId) {
     // create socket
     fd = socket(AF_INET, SOCK_STREAM, 0);

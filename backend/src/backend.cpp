@@ -3,7 +3,7 @@
 #include "msg.hpp"
 #include "reminder.hpp"
 
-// Claude: how to write a server that handles multiple users with multiple clients each:
+// Claude, code was edited afterwards: how to write a server that handles multiple users with multiple clients each:
 
 // accept incomming connections
 void Backend::acceptLoop(int serverFd) {
