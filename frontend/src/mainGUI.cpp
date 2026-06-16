@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
   QWidget *window = new QWidget;
   window->setLayout(homeScreen);
-  window->setWindowTitle("Todolist App");
+  window->setWindowTitle(QString::fromStdString("Todolist App — " + userid));
   window->show();
 
   // === home connencts ===
