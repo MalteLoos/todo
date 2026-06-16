@@ -25,7 +25,11 @@ TaskClient::TaskClient(const std::string& host, int port, const std::string& use
     // keepalive
     int yes = 1, idle = 10, interval = 5, count = 3;
     setsockopt(fd, SOL_SOCKET,  SO_KEEPALIVE,  &yes,      sizeof(yes));
+#ifdef TCP_KEEPIDLE
     setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE,  &idle,     sizeof(idle));
+#elif defined(TCP_KEEPALIVE)
+    setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &idle,     sizeof(idle));
+#endif
     setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &interval, sizeof(interval));
     setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT,   &count,    sizeof(count));
 
