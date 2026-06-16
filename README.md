@@ -85,7 +85,7 @@ The build creates two executables:
 
 Expected output:
 ```
-[Server] Listening on port 5000...
+[Server] Listening on port 8080...
 [Server] Waiting for client connections...
 ```
 
@@ -201,7 +201,7 @@ todo/
 - **TaskStorage** serializes/deserializes tasks to JSON
 
 ### Frontend Client
-- **Qt6 GUI** with QMainWindow, QListWidget, and button actions
+- **Qt6 GUI** with QWidget, QListWidget, and button actions
 - **Network client** connects to backend via TCP socket
 - **Signal/slot architecture** for responsive UI updates
 - **Task synchronization** receives updates from server
@@ -238,3 +238,17 @@ todo/
 | **Student 1** | [@Jonida-Zekaj](https://github.com/Jonida-Zekaj) | Core Architecture & Data Management (Backend) |
 | **Student 2** | [@MalteLoos](https://github.com/MalteLoos) | Advanced Utilities & Concurrency (Service Layer) |
 | **Student 3** | [@dannyzer575](https://github.com/dannyzer575) | GUI Developer & User Interaction (Frontend) |
+
+## AI Usage Declaration
+
+### Student 1 — Jonida (@Jonida-Zekaj)
+- **Tool:** (to be filled by Student 1)
+
+### Student 2 — Malte (@MalteLoos)
+- **Tool:** (to be filled by Student 2)
+- **Note:** Several files contain inline `// Claude:` comments marking where AI assistance was used (e.g., `client.cpp`, `backend.cpp`, `msg.hpp`).
+
+### Student 3 — Daniel (@dannyzer575)
+- **Tool:** Claude (Anthropic), via claude.ai
+- **Usage period:** May–June 2026
+- **How it was used:** Claude was used as a teaching assistant, explainer, and code reviewer throughout the GUI development process. All code in `mainGUI.cpp` and modifications to `taskManager.h`/`taskManager.cpp` (FilterMode/SortMode enums, `getTasksForView`, `updateTask` signature fix) were written by the student. Claude explained C++ and Qt concepts, reviewed pasted code for bugs, and helped the student understand Student 1's and Student 2's code for integration and defense preparation.
