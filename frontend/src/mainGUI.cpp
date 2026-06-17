@@ -41,10 +41,10 @@
 void refreshTaskList(QListWidget *taskList, const TaskManager &manager,
                      QLineEdit *search, QComboBox *filter, QComboBox *sorting) {
 
-  taskList->clear();
   taskList->blockSignals(true); // these signal block are needet since the code
                                 // changes the check marks and this normaly snds
                                 // out a signal (but we dont need it now)
+  taskList->clear();
   std::string keyword = search->text().toStdString();
   std::vector<Task *> tasks;
 
@@ -230,16 +230,35 @@ int main(int argc, char *argv[]) {
                    });
   QObject::connect(
       taskList, &QListWidget::itemChanged,
-      [taskList, &manager, &client, search, filter, sorting](QListWidgetItem *item) {
+      [window, taskList, &manager, &client, search, filter, sorting](QListWidgetItem *item) {
         // 1. read the task ID from the item (Qt::UserRole — same as always)
         std::string taskId = item->data(Qt::UserRole).toString().toStdString();
         Task *task = manager.searchById(taskId);
 
         if (task) {
+          bool isRecurring = (task->getRecurrence() != Recurrence::NONE);
+          bool checked = (item->checkState() == Qt::Checked);
+
           // 2. set that task's completed state based on the checkbox
-          task->setCompleted(item->checkState() == Qt::Checked);
+          task->setCompleted(checked);
           // 3. send update to server
           client->updateTask(*task);
+
+          if (isRecurring && checked) {
+            std::time_t time = std::chrono::system_clock::to_time_t(task->getDeadline());
+            std::stringstream deadlineStrStream;
+            deadlineStrStream << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M");
+
+            QMessageBox *box = new QMessageBox(window);
+            box->setWindowTitle("Task Recurred");
+            box->setText(QString("Recurring task <b>%1</b> has been completed for this occurrence.<br>Next occurrence scheduled for: <b>%2</b>")
+                .arg(QString::fromStdString(task->getTitle()))
+                .arg(QString::fromStdString(deadlineStrStream.str())));
+            box->setIcon(QMessageBox::Information);
+            box->setAttribute(Qt::WA_DeleteOnClose);
+            box->show();
+          }
+
           // 4. refresh
           refreshTaskList(taskList, manager, search, filter, sorting);
         }
