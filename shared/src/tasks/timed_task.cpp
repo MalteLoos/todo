@@ -124,6 +124,10 @@ std::string timedTask::serialize() const {
     return ss.str();
 }
 
+std::unique_ptr<Task> timedTask::clone() const {
+    return std::make_unique<timedTask>(*this);
+}
+
 std::string timedTask::toString() const {
     std::stringstream ss;
     ss << Task::toString() << "\n";

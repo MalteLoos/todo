@@ -124,13 +124,13 @@ std::vector<std::unique_ptr<Task>> TaskClient::getTasks() {
 
 void TaskClient::addTask(const Task& task) {
     std::vector<std::unique_ptr<Task>> t;
-    t.push_back(std::make_unique<Task>(task));
+    t.push_back(task.clone());
     sendMessage(Msg{Type::ADD, std::move(t)}.serialize());
 }
 
 void TaskClient::updateTask(const Task& task) {
     std::vector<std::unique_ptr<Task>> t;
-    t.push_back(std::make_unique<Task>(task));
+    t.push_back(task.clone());
     sendMessage(Msg{Type::UPDATE, std::move(t)}.serialize());
 }
 

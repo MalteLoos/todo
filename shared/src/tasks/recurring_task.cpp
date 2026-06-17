@@ -119,3 +119,15 @@ std::string recurringTask::toString() const {
     return ss.str();
 }
 
+void recurringTask::setCompleted(bool completed) {
+    if (completed) {
+        markCompleted();
+    } else {
+        Task::setCompleted(completed);
+    }
+}
+
+std::unique_ptr<Task> recurringTask::clone() const {
+    return std::make_unique<recurringTask>(*this);
+}
+

@@ -36,6 +36,7 @@ public:
 
     // POLYMORPHISM 
     virtual ~Task() = default; // => destructer 
+    virtual std::unique_ptr<Task> clone() const;
 
     // GETTERS
     std::string getId() const;
@@ -56,7 +57,7 @@ public:
     void setRecurrence(Recurrence recurrence);
     void setCategory(Category category);
     void setLabel(const std::string& label);
-    void setCompleted(bool completed);
+    virtual void setCompleted(bool completed);
 
     //UTILITIES
     bool isOverdue() const;

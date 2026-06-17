@@ -29,10 +29,12 @@ public:
     void markCompleted();
     std::string serialize() const override;
     static std::unique_ptr<recurringTask> deserialize(const std::string& line);
+    std::unique_ptr<Task> clone() const override;
     std::string toString() const override;
     std::string getType() const override {
         return "Recurring Task";
     }
+    void setCompleted(bool completed) override;
 
 private:
     std::chrono::system_clock::time_point calculateNextOccurrence(const std::chrono::system_clock::time_point& getCurrentDeadline) const;

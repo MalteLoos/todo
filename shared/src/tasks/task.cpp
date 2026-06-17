@@ -197,6 +197,10 @@ std::string Task::serializeBase() const {
     return ss.str();
 }
 
+std::unique_ptr<Task> Task::clone() const {
+    return std::make_unique<Task>(*this);
+}
+
 std::string Task::serialize() const {
     return "TASK|" + serializeBase();
 }

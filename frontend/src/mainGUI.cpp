@@ -16,6 +16,9 @@
 #include <QVBoxLayout>
 #include <QVariant>
 #include <QWidget>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QTimer>
 #include <QtCore/qnamespace.h>
 #include <QtCore/qobject.h>
 #include <QtWidgets/qboxlayout.h>
@@ -97,6 +100,7 @@ int main(int argc, char *argv[]) {
   int labelHeight = 50;
 
   std::string editingId;
+  std::string viewedTaskId;
 
   // --------------------------------------------------------
   // HOME SCREEN
@@ -271,6 +275,27 @@ int main(int argc, char *argv[]) {
   QLineEdit *recurrenceInfo = new QLineEdit;
   recurrenceInfo->setReadOnly(true);
 
+  QLabel *startTimeLabelTag = new QLabel("Start Time:");
+  QLineEdit *startTimeInfo = new QLineEdit;
+  startTimeInfo->setReadOnly(true);
+
+  QLabel *durationLabelTag = new QLabel("Duration:");
+  QLineEdit *durationInfo = new QLineEdit;
+  durationInfo->setReadOnly(true);
+
+  QLabel *actualTimeLabelTag = new QLabel("Actual Time:");
+  QLineEdit *actualTimeInfo = new QLineEdit;
+  actualTimeInfo->setReadOnly(true);
+
+  QLabel *timerRunningLabelTag = new QLabel("Timer Running:");
+  QLineEdit *timerRunningInfo = new QLineEdit;
+  timerRunningInfo->setReadOnly(true);
+
+  QPushButton *timerButton = new QPushButton("Start Timer");
+  QTimer *durationTimer = new QTimer;
+  durationTimer->setSingleShot(true);
+  QTimer *liveTimer = new QTimer;
+
   // === info layouts ===
 
   QFormLayout *infoScreen = new QFormLayout;
@@ -284,6 +309,11 @@ int main(int argc, char *argv[]) {
   infoScreen->addRow("Priority:", priorityInfo);
   infoScreen->addRow("Category:", categoryInfo);
   infoScreen->addRow("Recurrence:", recurrenceInfo);
+  infoScreen->addRow(startTimeLabelTag, startTimeInfo);
+  infoScreen->addRow(durationLabelTag, durationInfo);
+  infoScreen->addRow(actualTimeLabelTag, actualTimeInfo);
+  infoScreen->addRow(timerRunningLabelTag, timerRunningInfo);
+  infoScreen->addRow(timerButton);
 
   QDialog *infoDialog = new QDialog;
   infoDialog->setLayout(infoScreen);
@@ -292,7 +322,7 @@ int main(int argc, char *argv[]) {
   // === info connects ===
 
   // info button
-  QObject::connect(infoButtton, &QPushButton::clicked, [=, &manager]() {
+  QObject::connect(infoButtton, &QPushButton::clicked, [=, &manager, &viewedTaskId]() {
     // 1. get the selected item
     QListWidgetItem *selected = taskList->currentItem(); // nullptr if none
     // 2. guard: what if nothing is selected?
@@ -334,10 +364,122 @@ int main(int argc, char *argv[]) {
         int recurrenceIndex = static_cast<int>((task->getRecurrence()));
         recurrenceInfo->setText(recurrenceQstrList[recurrenceIndex]);
 
+        if (auto timed = dynamic_cast<const timedTask*>(task)) {
+          startTimeLabelTag->setVisible(true);
+          startTimeInfo->setVisible(true);
+          durationLabelTag->setVisible(true);
+          durationInfo->setVisible(true);
+          actualTimeLabelTag->setVisible(true);
+          actualTimeInfo->setVisible(true);
+          timerRunningLabelTag->setVisible(true);
+          timerRunningInfo->setVisible(true);
+          timerButton->setVisible(true);
+          timerButton->setText(timed->isTimerRunning() ? "Stop Timer" : "Start Timer");
+
+          std::time_t stime = std::chrono::system_clock::to_time_t(timed->getStartTime());
+          std::stringstream startTimeStrStream;
+          startTimeStrStream << std::put_time(std::localtime(&stime), "%Y-%m-%d %H:%M");
+          startTimeInfo->setText(QString::fromStdString(startTimeStrStream.str()));
+
+          durationInfo->setText(QString("%1 minutes").arg(timed->getDuration().count()));
+          actualTimeInfo->setText(QString("%1 minutes").arg(timed->getActualTime().count()));
+          timerRunningInfo->setText(timed->isTimerRunning() ? "Yes" : "No");
+        } else {
+          startTimeLabelTag->setVisible(false);
+          startTimeInfo->setVisible(false);
+          durationLabelTag->setVisible(false);
+          durationInfo->setVisible(false);
+          actualTimeLabelTag->setVisible(false);
+          actualTimeInfo->setVisible(false);
+          timerRunningLabelTag->setVisible(false);
+          timerRunningInfo->setVisible(false);
+          timerButton->setVisible(false);
+        }
+
+        viewedTaskId = taskId;
         infoDialog->show();
       }
     }
   });
+
+  // timer button inside info dialog
+  QObject::connect(timerButton, &QPushButton::clicked,
+                   [=, &manager, &client, &viewedTaskId]() {
+                     Task *task = manager.searchById(viewedTaskId);
+                     if (auto timed = dynamic_cast<timedTask*>(task)) {
+                       if (timed->isTimerRunning()) {
+                         auto now = std::chrono::system_clock::now();
+                         auto diff = std::chrono::duration_cast<std::chrono::minutes>(now - timed->getStartTime());
+                         timed->setActualTime(timed->getActualTime() + diff);
+                         timed->stopTimer();
+                         durationTimer->stop();
+                         liveTimer->stop();
+                       } else {
+                         timed->startTimer();
+                         // schedule auto-stop when remaining duration elapses
+                         auto remaining = timed->getDuration() - timed->getActualTime();
+                         if (remaining.count() > 0) {
+                           durationTimer->start(std::chrono::duration_cast<std::chrono::milliseconds>(remaining).count());
+                         }
+                         liveTimer->start(1000);
+                       }
+                       client->updateTask(*timed);
+                       refreshTaskList(taskList, manager, search, filter, sorting);
+
+                       // update info dialog fields in-place
+                       timerButton->setText(timed->isTimerRunning() ? "Stop Timer" : "Start Timer");
+                       timerRunningInfo->setText(timed->isTimerRunning() ? "Yes" : "No");
+                       actualTimeInfo->setText(QString("%1 min %2 sec").arg(timed->getActualTime().count()).arg(0));
+
+                       std::time_t stime = std::chrono::system_clock::to_time_t(timed->getStartTime());
+                       std::stringstream ss;
+                       ss << std::put_time(std::localtime(&stime), "%Y-%m-%d %H:%M");
+                       startTimeInfo->setText(QString::fromStdString(ss.str()));
+                     }
+                   });
+
+  // auto-stop when planned duration is reached
+  QObject::connect(durationTimer, &QTimer::timeout,
+                   [=, &manager, &client, &viewedTaskId]() {
+                     Task *task = manager.searchById(viewedTaskId);
+                     if (auto timed = dynamic_cast<timedTask*>(task)) {
+                       if (timed->isTimerRunning()) {
+                         timed->setActualTime(timed->getDuration());
+                         timed->stopTimer();
+                         liveTimer->stop();
+                         client->updateTask(*timed);
+                         refreshTaskList(taskList, manager, search, filter, sorting);
+
+                         // update info dialog fields in-place
+                         timerButton->setText("Start Timer");
+                         timerRunningInfo->setText("No");
+                         actualTimeInfo->setText(QString("%1 min 0 sec").arg(timed->getActualTime().count()));
+
+                         // show popup
+                         QMessageBox *box = new QMessageBox();
+                         box->setWindowTitle("Timer Finished");
+                         box->setText(QString("Time is up for: <b>%1</b>")
+                             .arg(QString::fromStdString(timed->getTitle())));
+                         box->setIcon(QMessageBox::Information);
+                         box->setAttribute(Qt::WA_DeleteOnClose);
+                         box->show();
+                       }
+                     }
+                   });
+
+  // live update of actual time every second
+  QObject::connect(liveTimer, &QTimer::timeout,
+                   [=, &manager, &viewedTaskId]() {
+                     Task *task = manager.searchById(viewedTaskId);
+                     if (auto timed = dynamic_cast<const timedTask*>(task)) {
+                       if (timed->isTimerRunning()) {
+                         auto now = std::chrono::system_clock::now();
+                         auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - timed->getStartTime());
+                         auto totalSec = timed->getActualTime().count() * 60 + elapsed.count();
+                         actualTimeInfo->setText(QString("%1 min %2 sec").arg(totalSec / 60).arg(totalSec % 60));
+                       }
+                     }
+                   });
 
   // --------------------------------------------------------
   // EDIT SCREEN
@@ -372,6 +514,16 @@ int main(int argc, char *argv[]) {
   QComboBox *recurrence = new QComboBox;
   recurrence->addItems(recurrenceQstrList);
 
+  QCheckBox *isTimed = new QCheckBox("Is Timed Task");
+  QDateTimeEdit *startTimeEdit = new QDateTimeEdit;
+  startTimeEdit->setCalendarPopup(true);
+  startTimeEdit->setEnabled(false);
+
+  QSpinBox *durationEdit = new QSpinBox;
+  durationEdit->setRange(0, 10080);
+  durationEdit->setSuffix(" min");
+  durationEdit->setEnabled(false);
+
   // === edit layouts ===
 
   QFormLayout *editScreen = new QFormLayout;
@@ -382,25 +534,27 @@ int main(int argc, char *argv[]) {
   editScreen->addRow("Priority:", priority);
   editScreen->addRow("Category:", category);
   editScreen->addRow("Recurrence:", recurrence);
+  editScreen->addRow(isTimed);
+  editScreen->addRow("Start Time:", startTimeEdit);
+  editScreen->addRow("Duration:", durationEdit);
   editScreen->addRow(doneButton, cancelButton);
-  // editScreen->setFieldGrowthPolicy(
-  //   QFormLayout::AllNonFixedFieldsGrow); // such that the right lineEdit
-  //  element expands as the window
-  //  grows
 
   QDialog *editDialog = new QDialog;
   editDialog->setLayout(editScreen);
   editDialog->setWindowTitle("Edit");
-  // editDialog->show();
 
   // === edit connects ===
+
+  QObject::connect(isTimed, &QCheckBox::toggled, [=](bool checked) {
+    startTimeEdit->setEnabled(checked);
+    durationEdit->setEnabled(checked);
+  });
 
   QObject::connect(cancelButton, &QPushButton::clicked,
                    [editDialog]() { editDialog->hide(); });
 
   QObject::connect(addTaskButton, &QPushButton::clicked,
-                   [titleEdit, descriptionEdit, labelEdit, deadlineEdit,
-                    priority, category, recurrence, editDialog, &editingId]() {
+                   [=, &editingId]() {
                      editingId = "";
                      titleEdit->clear();
                      descriptionEdit->clear();
@@ -409,6 +563,11 @@ int main(int argc, char *argv[]) {
                      priority->setCurrentIndex(0);
                      category->setCurrentIndex(0);
                      recurrence->setCurrentIndex(0);
+                     isTimed->setChecked(false);
+                     startTimeEdit->setDateTime(QDateTime::currentDateTime());
+                     startTimeEdit->setEnabled(false);
+                     durationEdit->setValue(0);
+                     durationEdit->setEnabled(false);
 
                      editDialog->show();
                    });
@@ -449,6 +608,21 @@ int main(int argc, char *argv[]) {
             int recurrenceIndex = static_cast<int>((task->getRecurrence()));
             recurrence->setCurrentIndex(recurrenceIndex);
 
+            if (auto timed = dynamic_cast<timedTask*>(task)) {
+              isTimed->setChecked(true);
+              startTimeEdit->setDateTime(QDateTime::fromSecsSinceEpoch(
+                  std::chrono::system_clock::to_time_t(timed->getStartTime())));
+              startTimeEdit->setEnabled(true);
+              durationEdit->setValue(timed->getDuration().count());
+              durationEdit->setEnabled(true);
+            } else {
+              isTimed->setChecked(false);
+              startTimeEdit->setDateTime(QDateTime::currentDateTime());
+              startTimeEdit->setEnabled(false);
+              durationEdit->setValue(0);
+              durationEdit->setEnabled(false);
+            }
+
             editDialog->show();
           }
         }
@@ -456,9 +630,7 @@ int main(int argc, char *argv[]) {
 
   QObject::connect(
       doneButton, &QPushButton::clicked,
-      [titleEdit, descriptionEdit, labelEdit, deadlineEdit, priority, category,
-       recurrence, editDialog, &editingId, &manager, taskList, search, filter,
-       sorting]() {
+      [=, &manager, &editingId]() {
         std::string title = titleEdit->text().toStdString();
         std::string description = descriptionEdit->toPlainText().toStdString();
 
@@ -477,8 +649,20 @@ int main(int argc, char *argv[]) {
         Category c = static_cast<Category>(category->currentIndex());
         Recurrence r = static_cast<Recurrence>(recurrence->currentIndex());
 
-        auto task = std::make_unique<Task>(title, deadline, p, c, r);
+        std::unique_ptr<Task> task;
+        if (isTimed->isChecked()) {
+          auto startTime = std::chrono::system_clock::from_time_t(
+              startTimeEdit->dateTime().toSecsSinceEpoch());
+          auto duration = std::chrono::minutes(durationEdit->value());
+          task = std::make_unique<timedTask>(title, deadline, p, r, startTime, duration);
+        } else if (r != Recurrence::NONE) {
+          task = std::make_unique<recurringTask>(title, deadline, p, r);
+        } else {
+          task = std::make_unique<Task>(title, deadline, p, c, r);
+        }
+
         task->setDescription(description);
+        task->setCategory(c);
         for (const std::string &label : labels)
           task->setLabel(label);
 

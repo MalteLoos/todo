@@ -113,7 +113,7 @@ void Backend::ensureReminder(const std::string& userId) {
     user->reminder = std::make_unique<ReminderScheduler>([this, userId](const Task& task) {
         // send NOTIFY with the due task to all connections of this user
         std::vector<std::unique_ptr<Task>> tasks;
-        tasks.push_back(std::make_unique<Task>(task));
+        tasks.push_back(task.clone());
         auto data = Msg{Type::NOTIFY, std::move(tasks)}.serialize();
         std::unique_lock lock(usersMtx);
         auto it = users.find(userId);
@@ -153,7 +153,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
             // add task: assumes only one task was sent
             if (!m.tasks.empty()) {
                 auto notify = Msg{Type::ADD, {}};
-                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
+                notify.tasks.push_back(m.tasks.front()->clone());
                 storage->addTask(std::move(m.tasks.front()));
                 refreshReminder(userId);
                 lock.unlock();
@@ -181,7 +181,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
             // update the task and notify others
             if (!m.tasks.empty()) {
                 auto notify = Msg{Type::UPDATE, {}};
-                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
+                notify.tasks.push_back(m.tasks.front()->clone());
                 storage->updateTask(m.tasks.front());
                 refreshReminder(userId);
                 lock.unlock();
@@ -192,7 +192,7 @@ void Backend::processMessage(std::string userId, int fd, std::vector<uint8_t>& m
             // delete the task and notify others
             if (!m.tasks.empty()) {
                 auto notify = Msg{Type::DELETE, {}};
-                notify.tasks.push_back(std::make_unique<Task>(*m.tasks.front()));
+                notify.tasks.push_back(m.tasks.front()->clone());
                 storage->deleteTask(m.tasks.front());
                 refreshReminder(userId);
                 lock.unlock();

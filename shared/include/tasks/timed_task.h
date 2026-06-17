@@ -42,6 +42,7 @@ public:
     void stopTimer();
     std::string serialize() const override;
     static std::unique_ptr<timedTask> deserialize(const std::string& line);
+    std::unique_ptr<Task> clone() const override;
     std::string toString() const override;
 };
 
