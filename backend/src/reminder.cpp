@@ -1,5 +1,16 @@
 #include "reminder.hpp"
 
+static std::chrono::system_clock::duration recurrenceInterval(Recurrence r) {
+    using namespace std::chrono;
+    switch (r) {
+        case Recurrence::DAILY:   return hours(24);
+        case Recurrence::WEEKLY:  return hours(24 * 7);
+        case Recurrence::MONTHLY: return hours(24 * 30);
+        case Recurrence::YEARLY:  return hours(24 * 365);
+        default:                  return hours(0);
+    }
+}
+
 ReminderScheduler::ReminderScheduler(NotifyFn fn)
     : notify(std::move(fn)),
       worker(&ReminderScheduler::loop, this) {}
@@ -56,6 +67,11 @@ void ReminderScheduler::loop() {
             lock.unlock();
             notify(*entry.task);
             lock.lock();
+            
+            // Claude: fix timer for reoccuring tasks
+            auto rec = entry.task->getRecurrence();
+            if (rec != Recurrence::NONE)
+                queue.push({entry.fireAt + recurrenceInterval(rec), entry.task});
         }
     }
 }
