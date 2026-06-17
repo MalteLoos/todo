@@ -249,6 +249,8 @@ todo/
 - **Note:** Several files contain inline `// Claude:` comments marking where AI assistance was used (e.g., `client.cpp`, `backend.cpp`, `msg.hpp`).
 
 ### Student 3 — Daniel (@dannyzer575)
-- **Tool:** Claude (Anthropic), via claude.ai
+- **Tool:** Gemini / Claude (Anthropic)
 - **Usage period:** May–June 2026
-- **How it was used:** Claude was used as a teaching assistant, explainer, and code reviewer throughout the GUI development process. All code in `mainGUI.cpp` and modifications to `taskManager.h`/`taskManager.cpp` (FilterMode/SortMode enums, `getTasksForView`, `updateTask` signature fix) were written by the student. Claude explained C++ and Qt concepts, reviewed pasted code for bugs, and helped the student understand Student 1's and Student 2's code for integration and defense preparation.
+- **How it was used:** 
+  - **Core GUI & Business Logic**: The student independently designed and wrote the GUI interface layout and connections. The AI was used only as a teaching assistant/explainer to clarify Qt concepts, review syntax, and understand other students' backend components.
+  - **Refactoring & Integration Assistance**: The AI was used directly as a code partner during later integration phases to implement polymorphic cloning (`clone()`) to prevent object slicing, timed task timer controls (details relocation, live counter, and auto-stop popups), and recurring task completion rollover UX.
