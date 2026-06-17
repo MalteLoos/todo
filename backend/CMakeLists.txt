@@ -11,7 +11,9 @@ add_executable(todo_backend
     src/backend.cpp
     src/taskStorage.cpp
     src/reminder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/recurring_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/timed_task.cpp
 )
 
 target_include_directories(todo_backend PRIVATE

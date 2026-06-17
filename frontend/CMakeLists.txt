@@ -42,10 +42,10 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 add_executable(todo_gui
     src/mainGUI.cpp
     src/client.cpp
-    src/tasks/recurring_task.cpp
-    src/tasks/timed_task.cpp
     src/taskManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/recurring_task.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../shared/src/tasks/timed_task.cpp
 )
 
 target_include_directories(todo_gui PRIVATE

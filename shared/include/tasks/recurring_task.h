@@ -22,10 +22,13 @@ public:
 
     //SETTERS
     void setRecurrence(Recurrence recurrence);
+    void setNextOccurrence(const std::chrono::system_clock::time_point& nextOccurrence);
 
 
     // UTILITIES
-    void markCompleted(); 
+    void markCompleted();
+    std::string serialize() const override;
+    static std::unique_ptr<recurringTask> deserialize(const std::string& line);
     std::string toString() const override;
     std::string getType() const override {
         return "Recurring Task";

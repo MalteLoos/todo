@@ -1,5 +1,7 @@
 #pragma once
-#include "task.h"
+#include "tasks/task.h"
+#include "tasks/recurring_task.h"
+#include "tasks/timed_task.h"
 #include <string>
 #include <sstream>
 #include <vector>
@@ -45,7 +47,15 @@ struct Msg {
         std::vector<std::unique_ptr<Task>> tasks;
         while (std::getline(ss, line)) {
             if (line.empty()) continue;
-            auto task = Task::deserialize(line);
+            auto sep = line.find('|');
+            if (sep == std::string::npos) throw std::runtime_error("Invalid task format");
+            const std::string taskType = line.substr(0, sep);
+
+            std::unique_ptr<Task> task;
+            if (taskType == "TASK")           task = Task::deserialize(line);
+            else if (taskType == "RECURRING") task = recurringTask::deserialize(line);
+            else if (taskType == "TIMED")     task = timedTask::deserialize(line);
+
             if (!task) throw std::runtime_error("Invalid task format");
             tasks.push_back(std::move(task));
         }

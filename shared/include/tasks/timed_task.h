@@ -40,6 +40,8 @@ public:
     // UTILITIES
     void startTimer();
     void stopTimer();
+    std::string serialize() const override;
+    static std::unique_ptr<timedTask> deserialize(const std::string& line);
     std::string toString() const override;
 };
 

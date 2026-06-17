@@ -9,7 +9,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <queue>
-#include "task.h"
+#include "tasks/task.h"
 #include "msg.hpp"
 
 class TaskClient {

@@ -22,6 +22,7 @@ protected:
     Category category; // => task classification - thought "wouldn't make sense to have as subclasses"!
     std::vector<std::string> label; // =>organizational tags i.e #work #university #personal 
     std::string timePointToString(const std::chrono::system_clock::time_point& tp) const;
+    std::string serializeBase() const;
 
 public:
     // CONSTRUCTORS 
@@ -60,14 +61,13 @@ public:
     //UTILITIES
     bool isOverdue() const;
 
-    std::string serialize() const;
+    virtual std::string serialize() const;
     static std::unique_ptr<Task> deserialize(const std::string& line);
 
     virtual std::string toString() const;
     virtual std::string getType() const{
         return "Task";
     }
-
 };
 
 #endif //TASK_H

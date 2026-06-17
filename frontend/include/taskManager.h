@@ -9,7 +9,7 @@
 #include <vector>
 #include <functional>
 
-#include "task.h"  // => taskManager relies on Task definition
+#include "tasks/task.h"  // => taskManager relies on Task definition
 
 #include "client.hpp"
 

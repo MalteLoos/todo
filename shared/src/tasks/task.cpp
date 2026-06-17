@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iomanip>
 
-#include "task.h"
+#include "tasks/task.h"
 #include <uuid/uuid.h> // => generating unique identifiers
 
 static std::string generateID(){  // => generating a unique identifier
@@ -184,36 +184,43 @@ std::string Task::timePointToString(const std::chrono::system_clock::time_point&
     return ss.str();
 }
 
-std::string Task::serialize() const {
+std::string Task::serializeBase() const {
     std::stringstream ss;
     ss << id << "|"
        << title << "|"
        << description << "|"
        << std::chrono::system_clock::to_time_t(deadline) << "|"
        << static_cast<int>(priority) << "|"
+       << static_cast<int>(category) << "|"
        << static_cast<int>(recurrence) << "|"
        << (completed ? "1" : "0");
     return ss.str();
 }
 
+std::string Task::serialize() const {
+    return "TASK|" + serializeBase();
+}
+
 std::unique_ptr<Task> Task::deserialize(const std::string& line) {
     std::stringstream ss(line);
-    std::string id, title, description, deadlineStr, priorityStr, recurrenceStr, completedStr;
+    std::string type, id, title, description, deadlineStr, priorityStr, categoryStr, recurrenceStr, completedStr;
 
-    if (!std::getline(ss, id, '|') ||
+    if (!std::getline(ss, type, '|') || type != "TASK" ||
+        !std::getline(ss, id, '|') ||
         !std::getline(ss, title, '|') ||
         !std::getline(ss, description, '|') ||
         !std::getline(ss, deadlineStr, '|') ||
         !std::getline(ss, priorityStr, '|') ||
+        !std::getline(ss, categoryStr, '|') ||
         !std::getline(ss, recurrenceStr, '|') ||
-        !std::getline(ss, completedStr))
+        !std::getline(ss, completedStr, '|'))
         return nullptr;
 
     auto deadline = std::chrono::system_clock::from_time_t(std::stoll(deadlineStr));
     auto task = std::make_unique<Task>(
         title, deadline,
         static_cast<Priority>(std::stoi(priorityStr)),
-        Category::OTHER,
+        static_cast<Category>(std::stoi(categoryStr)),
         static_cast<Recurrence>(std::stoi(recurrenceStr))
     );
     task->setId(id);

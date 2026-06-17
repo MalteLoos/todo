@@ -4,6 +4,18 @@
 #include <algorithm>
 
 #include "taskStorage.h"
+#include "tasks/recurring_task.h"
+#include "tasks/timed_task.h"
+
+static std::unique_ptr<Task> deserializeTask(const std::string& line) {
+    auto sep = line.find('|');
+    if (sep == std::string::npos) return nullptr;
+    const std::string type = line.substr(0, sep);
+    if (type == "TASK")      return Task::deserialize(line);
+    if (type == "RECURRING") return recurringTask::deserialize(line);
+    if (type == "TIMED")     return timedTask::deserialize(line);
+    return nullptr;
+}
 
 // CONSTRUCTOR
 taskStorage::taskStorage(const std::filesystem::path& path) : storagePath(path) {} 
@@ -105,7 +117,7 @@ bool taskStorage::loadTasks(std::vector<std::unique_ptr<Task>>& tasks) {
     while (std::getline(inFile, line)) {
         if (line.empty()) continue;
 
-        auto task = Task::deserialize(line);
+        auto task = deserializeTask(line);
         if (task) {
             tasks.push_back(std::move(task));
         }

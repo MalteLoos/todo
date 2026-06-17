@@ -76,6 +76,54 @@ void timedTask::stopTimer() {
     timerRunning = false;
 }
 
+std::unique_ptr<timedTask> timedTask::deserialize(const std::string& line) {
+    std::stringstream ss(line);
+    std::string type, id, title, description, deadlineStr, priorityStr, categoryStr, recurrenceStr, completedStr;
+    std::string startTimeStr, durationStr, actualTimeStr, timerRunningStr;
+
+    if (!std::getline(ss, type, '|') || type != "TIMED" ||
+        !std::getline(ss, id, '|') ||
+        !std::getline(ss, title, '|') ||
+        !std::getline(ss, description, '|') ||
+        !std::getline(ss, deadlineStr, '|') ||
+        !std::getline(ss, priorityStr, '|') ||
+        !std::getline(ss, categoryStr, '|') ||
+        !std::getline(ss, recurrenceStr, '|') ||
+        !std::getline(ss, completedStr, '|') ||
+        !std::getline(ss, startTimeStr, '|') ||
+        !std::getline(ss, durationStr, '|') ||
+        !std::getline(ss, actualTimeStr, '|') ||
+        !std::getline(ss, timerRunningStr))
+        return nullptr;
+
+    auto deadline = std::chrono::system_clock::from_time_t(std::stoll(deadlineStr));
+    auto startTime = std::chrono::system_clock::from_time_t(std::stoll(startTimeStr));
+    auto task = std::make_unique<timedTask>(
+        title, deadline,
+        static_cast<Priority>(std::stoi(priorityStr)),
+        static_cast<Recurrence>(std::stoi(recurrenceStr)),
+        startTime,
+        std::chrono::minutes(std::stoll(durationStr))
+    );
+    task->setId(id);
+    task->setDescription(description);
+    task->setCategory(static_cast<Category>(std::stoi(categoryStr)));
+    task->setCompleted(completedStr == "1");
+    task->setActualTime(std::chrono::minutes(std::stoll(actualTimeStr)));
+    task->setTimerRunning(timerRunningStr == "1");
+    return task;
+}
+
+std::string timedTask::serialize() const {
+    std::stringstream ss;
+    ss << "TIMED|" << serializeBase() << "|"
+       << std::chrono::system_clock::to_time_t(startTime) << "|"
+       << duration.count() << "|"
+       << actualTime.count() << "|"
+       << (timerRunning ? "1" : "0");
+    return ss.str();
+}
+
 std::string timedTask::toString() const {
     std::stringstream ss;
     ss << Task::toString() << "\n";
