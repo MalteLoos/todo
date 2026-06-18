@@ -1,6 +1,6 @@
 # **todo** — Smart Task Manager
 
-A modern C++ task management application featuring a multithreaded backend server, Qt6 GUI, and intelligent reminder system.
+A C++ task management application featuring a multithreaded backend server, Qt6 GUI, and reminder system.
 
 ![alt text](image.png)
 
@@ -21,20 +21,20 @@ A modern C++ task management application featuring a multithreaded backend serve
 
 ## Overview
 
-**todo** is a networked to-do application demonstrating enterprise C++ patterns:
+**todo** is a networked to-do application demonstrating C++ patterns:
 
 - **Distributed Architecture:** TCP-based client-server communication with protocol serialization
 - **Concurrent Processing:** Multi-threaded backend with mutex-protected shared state
 - **Smart Features:** Background reminder scheduler using `std::chrono` and thread timers
 - **Modern C++ Stack:** C++20, smart pointers, Qt6, CMake, cross-platform support
 
-This project showcases real-world software engineering practices including multi-threading, network IPC, GUI development, and persistent storage.
+This project showcases software engineering practices including multi-threading, network IPC, GUI development, and persistent storage.
 
 ---
 
 ## Prerequisites
 
-- **macOS 10.14+** (Linux/Windows compatible with adjustments)
+- Tested on: **macOS 10.14+** and **ubuntu 22.04**
 - **C++20 compiler** (clang, g++, or MSVC)
 - **CMake 3.16** or higher
 - **Qt6** (install via `brew install qt`)
@@ -69,6 +69,15 @@ cmake -B build -S .
 cmake --build build
 ```
 
+or
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
 The build creates two executables:
 - `build/backend/todo_backend` — Server process
 - `build/frontend/todo_gui` — GUI client application
@@ -81,6 +90,9 @@ The build creates two executables:
 **Terminal 1:**
 ```bash
 ./build/backend/todo_backend
+
+# run with custom port number:
+./build/backend/todo_backend 1234
 ```
 
 Expected output:
@@ -92,7 +104,14 @@ Expected output:
 ### Launch the GUI Client
 **Terminal 2:**
 ```bash
+# defaults: user=user, ip=127.0.0.1, port=8080
 ./build/frontend/todo_gui
+
+# with arguments
+./build/frontend/todo_gui malte 192.168.1.10 1234
+
+# on ubuntu 22.04: if there are problems with env variables try the sh script:
+./run_gui.sh
 ```
 
 The GUI window will open and connect to the backend server.
@@ -107,7 +126,7 @@ The GUI window will open and connect to the backend server.
 ✅ **Persistent Storage** — Tasks automatically saved to disk and restored on startup  
 ✅ **Thread-Safe Operations** — Mutex-protected concurrent access to shared task data  
 ✅ **Network IPC** — Binary protocol-based message passing between client and server  
-✅ **Modern GUI** — Qt6 widgets with responsive layout and event-driven architecture  
+✅ **GUI** — Qt6 widgets with responsive layout and event-driven architecture  
 
 ---
 
@@ -137,9 +156,6 @@ The GUI window will open and connect to the backend server.
 
 ```
 todo/
-├── .vscode/
-│   └── tasks.json            # VS Code build/debug task definitions
-|
 ├── backend/                  # Server-side logic and services
 │   ├── include/
 │   │   ├── backend.hpp       # Backend server interface and request handling
@@ -156,18 +172,10 @@ todo/
 |
 ├── frontend/                 # Client-side application and user interaction
 │   ├── include/
-│   │   ├── tasks/
-│   │   │   ├── recurring_task.h   # Specialized recurring task type
-│   │   │   └── timed_task.h        # Task with timing functionality
-│   │   │
 │   │   ├── client.hpp        # Communication layer for backend interaction
 │   │   └── taskManager.h     # Frontend business logic (CRUD, search, sorting)
 │   │
 │   ├── src/
-│   │   ├── tasks/
-│   │   │   ├── recurring_task.cpp
-│   │   │   └── timed_task.cpp
-│   │   │
 │   │   ├── client.cpp        # Client networking implementation
 │   │   ├── main.cpp          # Frontend application entry point
 │   │   ├── mainGUI.cpp       # Qt GUI implementation
@@ -177,13 +185,18 @@ todo/
 |
 ├── shared/                   # Code shared by frontend and backend
 │   ├── include/
-│   │   ├── msg.hpp           # Common communication protocol/messages
-│   │   └── task.h            # Core Task domain model
+│   │   ├── tasks/
+│   │   │   ├── task.h             # Core Task domain model
+│   │   │   ├── recurring_task.h   # Specialized recurring task type
+│   │   │   └── timed_task.h       # Task with timing functionality
+│   │   │
+│   │   └── msg.hpp           # Common communication protocol/messages
 │   │
 │   └── src/
-│       └── task.cpp          # Task implementation
-|
-├── .gitignore                # Files/directories excluded from version control
+│       └── tasks/
+│           ├── task.cpp           # Task implementation
+│           ├── recurring_task.cpp
+│           └── timed_task.cpp
 |
 ├── CMakeLists.txt            # Root build configuration coordinating all modules
 |
@@ -195,7 +208,7 @@ todo/
 ## Architecture
 
 ### Backend Server
-- **Multi-threaded TCP server** accepting client connections on port 5000
+- **Multi-threaded TCP server** accepting client connections
 - **User session management** with isolated task maps per user ID
 - **ReminderScheduler** runs background thread monitoring task deadlines
 - **TaskStorage** serializes/deserializes tasks to JSON
@@ -209,11 +222,10 @@ todo/
 ### Communication Protocol
 - Binary message format with serialized task objects
 - Message types: `ADD`, `DELETE`, `UPDATE`, `LIST`, `NOTIFY`, `ERROR`
-- Per-user isolation ensures data privacy
 
 ### Concurrency Model
 - `std::mutex` protects shared `users` map in backend
-- `std::lock_guard` ensures exception-safe locking
+- `std::unique_lock` for exception-safe locking
 - `std::thread` runs reminder scheduler asynchronously
 - `std::chrono` handles deadline calculations
 
@@ -236,7 +248,7 @@ todo/
 | Contributor | GitHub Username | Role / Subsystem Focus |
 | :--- | :--- | :--- |
 | **Student 1** | [@Jonida-Zekaj](https://github.com/Jonida-Zekaj) | Core Architecture & Data Management (Backend) |
-| **Student 2** | [@MalteLoos](https://github.com/MalteLoos) | Advanced Utilities & Concurrency (Service Layer) |
+| **Student 2** | [@MalteLoos](https://github.com/MalteLoos) | Server Client communication & reminder |
 | **Student 3** | [@dannyzer575](https://github.com/dannyzer575) | GUI Developer & User Interaction (Frontend) |
 
 ## AI Usage Declaration
@@ -245,8 +257,9 @@ todo/
 - **Tool:** (to be filled by Student 1)
 
 ### Student 2 — Malte (@MalteLoos)
-- **Tool:** (to be filled by Student 2)
-- **Note:** Several files contain inline `// Claude:` comments marking where AI assistance was used (e.g., `client.cpp`, `backend.cpp`, `msg.hpp`).
+- **Tool:** Claude Sonnet 4.6 (claude.ai & claude code)
+- **Usage period:** May–June 2026
+- **Note:** Usage is marked in code comments as `// Claude:` including promp and if it was edited or used directly
 
 ### Student 3 — Daniel (@dannyzer575)
 - **Tool:** Gemini / Claude (Anthropic)

@@ -2,9 +2,9 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-    // Claude: start the recieve loop here:
     int port = argc > 1 ? std::stoi(argv[1]) : 8080;
 
+    // Claude: start the recieve loop here:
     int serverFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd < 0) { std::cerr << "Failed to create socket\n"; return 1; }
 

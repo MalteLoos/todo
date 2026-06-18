@@ -77,11 +77,13 @@ void refreshTaskList(QListWidget *taskList, const TaskManager &manager,
 int main(int argc, char *argv[]) {
   
   std::string userid = "user";
-  if (argc > 1) {
-    userid = argv[1];
-  }
+  std::string ip = "127.0.0.1";
+  int port = 8080;
+  if (argc > 1) userid = argv[1];
+  if (argc > 2) ip = argv[2];
+  if (argc > 3) port = std::stoi(argv[3]);
 
-  std::shared_ptr<TaskClient> client(std::make_shared<TaskClient>("127.0.0.1", 8080, userid));
+  std::shared_ptr<TaskClient> client(std::make_shared<TaskClient>(ip, port, userid));
   QApplication app(argc, argv);
 
   // usefull variables
