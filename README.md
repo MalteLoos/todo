@@ -254,7 +254,7 @@ todo/
 
 ## AI Usage Declaration
 
-AI Usage Declaration: AI tools (including Claude and Gemini) were used by some team members between May–June 2026 for learning support, code explanation, refactoring, integration assistance, and implementation guidance, with AI-assisted code contributions documented in comments where applicable
+AI tools (Claude Sonnet 4.6 and Gemini Pro) were leveraged during development to assist with integration and act as teaching tools for content beyond the scope of the source material. Specific usage in code was documented in the comments.
 
 
 
