@@ -16,6 +16,7 @@ A C++ task management application featuring a multithreaded backend server, Qt6 
 - [Architecture](#architecture)
 - [Proposed Extensions](#proposed-extensions)
 - [Development Team](#development-team)
+- [AI Usage Declaration](#ai-usage-declaration)
 
 ---
 
@@ -253,17 +254,9 @@ todo/
 
 ## AI Usage Declaration
 
-### Student 1 — Jonida (@Jonida-Zekaj)
-- **Tool:** (to be filled by Student 1)
+AI Usage Declaration: AI tools (including Claude and Gemini) were used by some team members between May–June 2026 for learning support, code explanation, refactoring, integration assistance, and implementation guidance, with AI-assisted code contributions documented in comments where applicable
 
-### Student 2 — Malte (@MalteLoos)
-- **Tool:** Claude Sonnet 4.6 (claude.ai & claude code)
-- **Usage period:** May–June 2026
-- **Note:** Usage is marked in code comments as `// Claude:` including promp and if it was edited or used directly
 
-### Student 3 — Daniel (@dannyzer575)
-- **Tool:** Gemini / Claude (Anthropic)
-- **Usage period:** May–June 2026
-- **How it was used:** 
-  - **Core GUI & Business Logic**: The student independently designed and wrote the GUI interface layout and connections. The AI was used only as a teaching assistant/explainer to clarify Qt concepts, review syntax, and understand other students' backend components.
-  - **Refactoring & Integration Assistance**: The AI was used directly as a code partner during later integration phases to implement polymorphic cloning (`clone()`) to prevent object slicing, timed task timer controls (details relocation, live counter, and auto-stop popups), and recurring task completion rollover UX.
+
+
+
